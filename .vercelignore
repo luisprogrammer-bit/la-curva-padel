@@ -1,0 +1,5 @@
+functions/
+node_modules/
+*.md
+_backups/
+*.zip

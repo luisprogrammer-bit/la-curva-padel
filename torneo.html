@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script src="js/tema.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torneo | La Curva Pádel Indoor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .estado-torneo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 0.8em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .estado-torneo.borrador { background: var(--fondo-3); color: var(--gris); }
+    .estado-torneo.habilitado { background: rgba(180,227,61,0.15); color: var(--acento); }
+    .estado-torneo.finalizado { background: rgba(66,165,245,0.15); color: var(--celeste); }
+    .estado-torneo.suspendido { background: rgba(255,82,82,0.15); color: var(--rojo); }
+    .estado-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulso 1.5s infinite;
+    }
+
+    .torneo-header-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 25px;
+      border-left: 4px solid var(--verde);
+    }
+    .torneo-header-card .categoria-tag {
+      display: inline-block;
+      padding: 5px 15px;
+      background: rgba(180,227,61,0.15);
+      color: var(--acento);
+      border-radius: 50px;
+      font-size: 0.75em;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+    }
+    .torneo-header-card .fecha {
+      color: var(--gris);
+      margin-bottom: 20px;
+    }
+
+    .campeones-seccion {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 25px;
+    }
+    .campeon-card {
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .campeon-card.campeon {
+      background: rgba(255,193,7,0.12);
+      border: 1px solid rgba(255,193,7,0.4);
+    }
+    .campeon-card.subcampeon {
+      background: rgba(192,192,192,0.12);
+      border: 1px solid rgba(192,192,192,0.4);
+    }
+    .campeon-card .posicion {
+      font-size: 2.5em;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    .campeon-card.campeon .posicion { color: var(--oro); }
+    .campeon-card.subcampeon .posicion { color: var(--plata); }
+    .campeon-card .titulo {
+      font-size: 0.75em;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gris);
+      margin-bottom: 10px;
+    }
+    .campeon-card .jugadores {
+      font-size: 1.1em;
+      font-weight: 700;
+      color: var(--blanco);
+      line-height: 1.4;
+    }
+    .campeon-card .categorias {
+      font-size: 0.85em;
+      color: var(--gris);
+      margin-top: 5px;
+    }
+
+    .seccion-cuadro {
+      margin-top: 35px;
+    }
+    .seccion-cuadro h2 {
+      color: var(--acento);
+      font-size: 1.3em;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .grupos-grid-publico {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+    .grupo-card-publico {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      padding: 22px;
+      border-top: 3px solid var(--verde);
+    }
+    .grupo-card-publico h4 {
+      color: var(--acento);
+      font-size: 1em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .grupo-card-publico .grupo-progreso {
+      font-size: 0.7em;
+      color: var(--gris);
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .grupo-tabla-publica {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85em;
+    }
+    .grupo-tabla-publica th {
+      color: var(--gris);
+      font-size: 0.75em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 4px;
+      text-align: center;
+      border-bottom: 1px solid var(--borde);
+      font-weight: 600;
+    }
+    .grupo-tabla-publica th:first-child { text-align: left; }
+    .grupo-tabla-publica td {
+      padding: 10px 4px;
+      border-bottom: 1px solid var(--borde);
+      color: var(--gris);
+      text-align: center;
+      font-size: 0.95em;
+    }
+    .grupo-tabla-publica td:first-child {
+      text-align: left;
+      color: var(--blanco);
+      font-weight: 600;
+    }
+    .grupo-tabla-publica tr.clasifica td { color: var(--acento); }
+    .grupo-tabla-publica tr.clasifica td:first-child {
+      color: var(--acento);
+      font-weight: 700;
+    }
+    .grupo-tabla-publica tr.clasifica td:first-child::before {
+      content: "✓ ";
+      font-weight: 800;
+    }
+
+    .grupo-partidos-publico {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--borde);
+    }
+    .grupo-partidos-publico h5 {
+      color: var(--gris);
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .grupo-partido-publico {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.85em;
+      gap: 10px;
+    }
+    .grupo-partido-publico .pareja-mini {
+      flex: 1;
+      color: var(--gris);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .grupo-partido-publico .pareja-mini.ganadora {
+      color: var(--acento);
+      font-weight: 700;
+    }
+    .grupo-partido-publico .marcador-mini {
+      color: var(--acento);
+      font-weight: 700;
+      font-size: 0.85em;
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+    .grupo-partido-publico .marcador-mini.pendiente {
+      color: var(--gris-oscuro);
+      font-weight: 400;
+    }
+
+    .bracket-publico-container {
+      display: flex;
+      gap: 25px;
+      overflow-x: auto;
+      padding: 20px 0 25px;
+      align-items: flex-start;
+      min-height: 200px;
+    }
+    .bracket-publico-ronda {
+      min-width: 220px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .bracket-publico-ronda-titulo {
+      color: var(--acento);
+      font-size: 0.75em;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 10px 0;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--borde);
+    }
+    .bracket-publico-ronda-partidos {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      justify-content: space-around;
+      flex: 1;
+    }
+    .bracket-publico-partido {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-left: 4px solid var(--gris-oscuro);
+      border-radius: 12px;
+      padding: 12px 15px;
+      transition: var(--transicion);
+    }
+    .bracket-publico-partido.cerrado { border-left-color: var(--verde); }
+    .bracket-publico-partido.por-jugar {
+      border-left-color: #42a5f5;
+      box-shadow: 0 0 0 2px rgba(66,165,245,0.15);
+    }
+    .bracket-publico-partido.esperando { opacity: 0.5; }
+    .bracket-publico-pareja {
+      padding: 4px 0;
+      font-size: 0.85em;
+      color: var(--gris);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid var(--borde);
+    }
+    .bracket-publico-pareja:last-child { border-bottom: none; }
+    .bracket-publico-pareja.ganadora {
+      color: var(--acento);
+      font-weight: 700;
+    }
+    .bracket-publico-pareja.ganadora::after {
+      content: "✓";
+      font-size: 0.9em;
+    }
+    .bracket-publico-marcador {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(180,227,61,0.2);
+      text-align: right;
+      font-size: 0.75em;
+      font-weight: 800;
+      color: var(--acento);
+      letter-spacing: 1px;
+    }
+    .bracket-publico-estado {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(66,165,245,0.3);
+      text-align: right;
+      font-size: 0.7em;
+      font-weight: 700;
+      color: var(--celeste);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .proximos-partidos-lista {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 15px;
+      margin-bottom: 35px;
+    }
+    .proximo-partido-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 15px 20px;
+      border-left: 3px solid #42a5f5;
+    }
+    .proximo-partido-card .ronda-nombre {
+      color: var(--celeste);
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .proximo-partido-card .pareja-row {
+      font-size: 0.9em;
+      color: var(--blanco);
+      padding: 3px 0;
+    }
+
+    .proximo-partido-live {
+      background: rgba(66,165,245,0.1);
+      border-left: 4px solid #42a5f5;
+      border-radius: 15px;
+      padding: 20px 25px;
+      margin-bottom: 25px;
+    }
+    .proximo-partido-live .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--celeste);
+      font-size: 0.75em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .proximo-partido-live .badge-live::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #42a5f5;
+      animation: pulso 1.5s infinite;
+    }
+    .proximo-partido-live .parejas-live {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .proximo-partido-live .pareja-live {
+      font-size: 1em;
+      font-weight: 700;
+      color: var(--blanco);
+      text-align: center;
+      flex: 1;
+      min-width: 150px;
+    }
+    .proximo-partido-live .vs-live {
+      color: var(--celeste);
+      font-weight: 800;
+      font-size: 0.9em;
+      letter-spacing: 2px;
+    }
+    .link-jugador {
+      color: inherit;
+      text-decoration: none;
+    }
+    .link-jugador:hover { text-decoration: underline; }
+    .aviso-simulado {
+      background: rgba(255,152,0,0.12);
+      border: 1px solid rgba(255,152,0,0.4);
+      color: var(--naranja);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
+    .estado-torneo.en-juego { background: rgba(66,165,245,0.15); color: var(--celeste); }
+    .bracket-publico-partido.bye { opacity: 0.6; }
+    .buscador-torneo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin: 10px 0 8px;
+    }
+    .buscador-torneo input {
+      flex: 1;
+      min-width: 240px;
+      padding: 13px 18px;
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 50px;
+      color: var(--blanco);
+      font-family: inherit;
+      font-size: 0.92em;
+    }
+    .buscador-torneo input:focus { outline: none; border-color: var(--verde); }
+    .en-vivo-tag { color: var(--acento); font-size: 0.75em; font-weight: 700; letter-spacing: 1px; }
+    .resultado-busqueda-torneo { color: var(--gris); font-size: 0.82em; min-height: 1.2em; margin-bottom: 15px; }
+    .resaltado { outline: 2px solid #ffc107; outline-offset: 2px; border-radius: 8px; }
+    tr.resaltado td { background: rgba(255,193,7,0.08); }
+    .atenuado { opacity: 0.35; }
+    .cancha-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--naranja);
+      margin-bottom: 6px;
+    }
+    .cancha-tag.jugada { color: var(--gris); }
+    .cancha-tag.en-juego::before {
+      content: "";
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #ff9800;
+      animation: pulso 1.5s infinite;
+    }
+
+    /* ===== BANNER DEL CIRCUITO ===== */
+    .circuito-banner {
+      display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;
+      padding: 28px 30px; margin: 10px 0 25px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 88% 18%, rgba(180,227,61,0.22), transparent 40%),
+        var(--banner);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .circuito-banner::before {
+      content: ""; position: absolute; inset: 16px; border: 2px solid var(--borde); border-radius: 6px; pointer-events: none;
+    }
+    .circuito-banner::after {
+      content: ""; position: absolute; top: 16px; bottom: 16px; left: 55%; width: 2px; background: var(--fondo-3); pointer-events: none;
+    }
+    .circuito-izq, .circuito-der { position: relative; z-index: 1; }
+    .circuito-titulo { color: var(--verde); font-weight: 800; letter-spacing: 4px; font-size: 0.85em; font-style: italic; }
+    .circuito-izq h1 { font-size: 2.5em; font-weight: 900; text-transform: uppercase; color: #FFFFFF; margin: 4px 0 6px; line-height: 1.1; }
+    .circuito-fecha { color: #DCE7F3; font-size: 0.9em; text-transform: capitalize; }
+    .circuito-der { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .circuito-logo { width: 170px; max-width: 45vw; height: auto; }
+    .circuito-categoria {
+      background: var(--verde); color: #0a0a0a; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; font-size: 0.85em; padding: 8px 20px; border-radius: 50px;
+    }
+    .circuito-der .estado-torneo { margin: 0; background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+    .circuito-der .estado-torneo.en-juego .estado-dot { background: #FF8A1F; }
+    @media (max-width: 700px) {
+      .circuito-der { align-items: flex-start; }
+      .circuito-izq h1 { font-size: 1.7em; }
+    }
+
+    /* ===== ZONAS (estilo planilla del club) ===== */
+    .zonas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 18px; }
+    .zona-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      box-shadow: var(--sombra-card);
+      border-radius: 18px; overflow: hidden;
+    }
+    .zona-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px; background: #0F1B26; border-bottom: 1px solid var(--borde);
+    }
+    .zona-titulo { display: flex; align-items: center; gap: 10px; color: var(--verde); font-weight: 800; letter-spacing: 2px; font-size: 0.95em; }
+    .zona-titulo b {
+      background: var(--verde); color: #0a0a0a; width: 30px; height: 30px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 1em; letter-spacing: 0;
+    }
+    .zona-progreso { color: #B9C6D3; font-size: 0.72em; font-weight: 600; letter-spacing: 1px; }
+    .zona-cuerpo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .zona-col { padding: 14px 16px; }
+    .zona-col + .zona-col { border-left: 1px solid var(--borde); }
+    .zona-col-titulo { color: var(--acento); font-size: 0.68em; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+    .zona-pareja { display: flex; align-items: baseline; gap: 6px; padding: 7px 0; color: var(--blanco); font-size: 0.88em; font-weight: 700; }
+    .zona-num { color: var(--acento); font-weight: 800; min-width: 18px; }
+    .zona-nombre { flex: 1; }
+    .zona-pts { color: var(--gris); font-size: 0.8em; font-weight: 600; }
+    .zona-pareja.clasifica .zona-nombre::after { content: " ✓"; color: var(--acento); }
+    .zona-cruce {
+      display: flex; align-items: center; gap: 8px; padding: 7px 0;
+      font-size: 0.82em; border-bottom: 1px dashed var(--borde);
+    }
+    .zona-cruce:last-child { border-bottom: none; }
+    .cruce-vs { color: var(--blanco); font-weight: 800; min-width: 62px; letter-spacing: 0.5px; }
+    .cruce-vs b { color: var(--blanco); }
+    .cruce-vs b.gano { color: var(--acento); }
+    .cruce-dia { color: var(--gris); flex: 1; }
+    .cruce-hora { color: var(--blanco); font-weight: 700; }
+    .cruce-resultado { color: var(--acento); font-weight: 800; letter-spacing: 1px; margin-left: auto; }
+    .cruce-vivo { color: var(--naranja); font-weight: 800; margin-left: auto; }
+    .cruce-pendiente { color: var(--gris-oscuro); margin-left: auto; font-size: 0.9em; }
+    @media (max-width: 500px) {
+      .zonas-grid { grid-template-columns: 1fr; }
+      .zona-cuerpo { grid-template-columns: 1fr; }
+      .zona-col + .zona-col { border-left: none; border-top: 1px solid var(--borde); }
+    }
+
+    /* ===== LLAVES CON LÍNEAS ===== */
+    .llaves-scroll { overflow-x: auto; padding-bottom: 12px; }
+    .llaves { display: flex; align-items: stretch; min-width: max-content; }
+    .llave-col { display: flex; flex-direction: column; width: 230px; }
+    .llave-col + .llave-col { margin-left: 34px; }
+    .llave-col-titulo {
+      text-align: center; color: var(--acento); font-weight: 800; font-size: 0.72em;
+      letter-spacing: 2px; text-transform: uppercase; padding-bottom: 12px; margin-bottom: 6px;
+      border-bottom: 1px solid var(--borde);
+    }
+    .llave-col-cuerpo { flex: 1; display: flex; flex-direction: column; }
+    .llave-par { flex: 1; display: flex; flex-direction: column; position: relative; }
+    .llave-slot { flex: 1; display: flex; align-items: center; position: relative; padding: 8px 0; }
+    .llave-slot.unica { flex: 1; }
+    .llave-slot > * { width: 100%; }
+    /* línea que sale de cada partido hacia la derecha */
+    .llave-col:not(.final):not(.campeon-col) .llave-slot::after {
+      content: ""; position: absolute; right: -17px; top: 50%; width: 17px; border-top: 2px solid rgba(180,227,61,0.55);
+    }
+    /* línea vertical que une los dos partidos de un par */
+    .llave-par::after {
+      content: ""; position: absolute; right: -17px; top: 25%; bottom: 25%; border-right: 2px solid rgba(180,227,61,0.55);
+    }
+    /* línea que entra a cada partido desde la izquierda */
+    .llave-col:not(.primera) .llave-slot::before {
+      content: ""; position: absolute; left: -17px; top: 50%; width: 17px; border-top: 2px solid rgba(180,227,61,0.55);
+    }
+    .llave-box {
+      background: var(--card); border: 1px solid rgba(180,227,61,0.35); border-radius: 12px; overflow: hidden;
+    }
+    .llave-box.vivo { border-color: #ff9800; box-shadow: 0 0 0 3px rgba(255,152,0,0.15); }
+    .llave-box.bye { opacity: 0.55; }
+    .llave-pareja {
+      padding: 9px 12px; font-size: 0.84em; font-weight: 700; color: var(--blanco);
+      background: var(--fondo-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .llave-pareja.ganadora { color: #0a0a0a; background: var(--verde); }
+    .llave-pareja.ganadora .link-jugador { color: #0a0a0a; }
+    .llave-pareja.vacia { color: var(--gris-oscuro); }
+    .llave-medio {
+      display: flex; justify-content: center; align-items: center; gap: 8px; padding: 5px 10px;
+      border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde);
+      min-height: 26px;
+    }
+    .llave-info { font-size: 0.75em; font-weight: 800; letter-spacing: 1px; }
+    .llave-info.hora { color: var(--blanco); font-size: 0.95em; }
+    .llave-info.dia { color: var(--gris); font-weight: 600; }
+    .llave-info.resultado { color: var(--acento); }
+    .llave-info.vivo { color: var(--naranja); }
+    .llave-info.gris { color: var(--gris-oscuro); font-weight: 600; }
+    .campeon-col .llave-slot::before { display: none; }
+    .llave-campeon {
+      text-align: center; font-size: 2em; padding: 18px 10px; border-radius: 14px;
+      background: rgba(255,193,7,0.12); border: 1px solid rgba(255,193,7,0.45);
+    }
+    .llave-campeon div { font-size: 0.45em; font-weight: 800; color: var(--oro); margin-top: 6px; }
+    .llave-campeon .link-jugador { color: var(--oro); }
+    .aviso-llaves-pub { color: var(--gris); padding: 25px; text-align: center; background: var(--card); border-radius: 14px; border: 1px dashed var(--borde); }
+
+    /* ===== EN VIVO + PROGRAMACIÓN ===== */
+    .vivo-punto { width: 10px; height: 10px; border-radius: 50%; background: #ff9800; display: inline-block; animation: pulso 1.5s infinite; margin-right: 6px; }
+    .vivo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .vivo-card { background: rgba(255,152,0,0.07); border: 1px solid rgba(255,152,0,0.35); border-radius: 14px; padding: 14px 16px; }
+    .vivo-cancha { color: var(--naranja); font-weight: 800; }
+    .vivo-fase { color: var(--gris); font-size: 0.72em; text-transform: uppercase; letter-spacing: 1px; margin: 3px 0 8px; }
+    .vivo-pareja { color: var(--blanco); font-weight: 700; font-size: 0.86em; }
+    .vivo-vs { color: var(--gris); font-size: 0.72em; }
+    .prog-dias { display: grid; gap: 16px; }
+    .prog-dia { background: var(--card); border: 1px solid var(--borde); border-radius: 16px; padding: 16px 18px; }
+    .prog-dia-titulo { color: var(--acento); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85em; margin-bottom: 10px; }
+    .prog-fila {
+      display: grid; grid-template-columns: 60px 130px 1fr auto; gap: 12px; align-items: center;
+      padding: 9px 0; border-top: 1px solid var(--borde); font-size: 0.86em;
+    }
+    .prog-hora { color: var(--blanco); font-weight: 800; }
+    .prog-fase { color: var(--gris); font-size: 0.85em; }
+    .prog-parejas { color: var(--blanco); display: flex; gap: 8px; flex-wrap: wrap; }
+    .prog-parejas em { color: var(--gris); font-style: normal; }
+    .prog-parejas .gano { color: var(--acento); font-weight: 700; }
+    .prog-estado { color: var(--gris-oscuro); font-size: 0.82em; font-weight: 700; }
+    .prog-estado.jugado { color: var(--acento); }
+    .prog-estado.vivo { color: var(--naranja); }
+    .prog-fila.jugado .prog-hora { color: var(--gris); }
+    @media (max-width: 650px) {
+      .prog-fila { grid-template-columns: 52px 1fr; }
+      .prog-fase { grid-column: 2; }
+      .prog-parejas { grid-column: 1 / -1; }
+      .prog-estado { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-app">
+
+    <aside class="sidebar" id="sidebarWrap"></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+    <div class="contenido-app">
+
+      <header class="header-top" id="headerTopWrap"></header>
+
+      <main class="main-content">
+
+        <div id="contenido">
+          <div class="volver-link" style="opacity:0.5;">← Volver al inicio</div>
+          <p style="color:var(--gris); text-align:center; padding:60px;">Cargando torneo...</p>
+        </div>
+
+      </main>
+
+      <footer>
+        <div class="footer-info">
+          <strong>LA CURVA PÁDEL INDOOR</strong>
+          <span class="separador"></span>
+          <span>Av. San Martín 2479</span>
+          <span class="separador"></span>
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">📷 @lacurvapadelindoor</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, get }
+      from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import { mostrarToast } from "./js/toast.js";
+    import { iniciarLayout, cargarFotoPerfil, limpiarCacheFoto } from "./js/layout.js";
+    import { srcSeguro } from "./js/imagenes.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.toastExito = (m) => mostrarToast(m, "exito");
+    window.toastError = (m) => mostrarToast(m, "error");
+    window.toastInfo  = (m) => mostrarToast(m, "info");
+
+    // ============================================
+    // MENÚ LATERAL + BARRA SUPERIOR (compartido)
+    // ============================================
+    iniciarLayout({ auth, db, activo: "torneos" });
+
+    // ============================================
+    // RENDERIZADO DEL TORNEO
+    // ============================================
+    function aArray(x) {
+      if (!x) return [];
+      if (Array.isArray(x)) return x.filter(v => v !== null && v !== undefined);
+      if (typeof x === "object") {
+        return Object.keys(x).sort((a, b) => Number(a) - Number(b)).map(k => x[k]).filter(v => v !== null && v !== undefined);
+      }
+      return [];
+    }
+
+    function esc(t) {
+      return String(t ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function normalizarBracket(bracket) {
+      if (!bracket) return null;
+      return {
+        ...bracket,
+        grupos: aArray(bracket.grupos).map(g => ({
+          ...g,
+          tabla: aArray(g.tabla),
+          parejas: aArray(g.parejas),
+          partidos: aArray(g.partidos).map(p => ({ ...p, sets: aArray(p.sets) }))
+        })),
+        rondas: aArray(bracket.rondas).map(r => ({
+          ...r,
+          partidos: aArray(r.partidos).map(p => ({ ...p, sets: aArray(p.sets) }))
+        }))
+      };
+    }
+
+    function linkJugador(nombre, uid) {
+      if (!uid || /^(sim_|manual_)/.test(String(uid))) return esc(nombre);
+      return `<a class="link-jugador" href="perfil.html?uid=${uid}">${esc(nombre)}</a>`;
+    }
+
+    function parejaHTML(p) {
+      if (!p) return "?";
+      return `${linkJugador(p.j1, p.uid1)} + ${linkJugador(p.j2, p.uid2)}`;
+    }
+
+    function parejaTexto(p) {
+      return p ? `${esc(p.j1)} + ${esc(p.j2)}` : "?";
+    }
+
+    function mismaPareja(a, b) {
+      return !!(a && b && a.uid1 === b.uid1 && a.uid2 === b.uid2);
+    }
+
+    function canchaTagHTML(p) {
+      if (!p || !p.cancha || !p.cancha.nombre || p.bye) return "";
+      if (p.cerrado) return `<div class="cancha-tag jugada">🎾 ${esc(p.cancha.nombre)}</div>`;
+      return `<div class="cancha-tag en-juego">En juego · ${esc(p.cancha.nombre)}</div>`;
+    }
+
+    function textoGenero(g) {
+      if (g === "masculino") return "Masculino";
+      if (g === "femenino") return "Femenino";
+      if (g === "mixto") return "Mixto";
+      return g || "-";
+    }
+
+    // ============================================
+    // VISTA PÚBLICA: ZONAS, LLAVES Y PROGRAMACIÓN
+    // ============================================
+    const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+    function apellido(nombre) {
+      const partes = String(nombre || "?").trim().split(/\s+/);
+      return partes[partes.length - 1];
+    }
+    function parejaCorta(p) {
+      if (!p) return "Por definir";
+      return `${esc(apellido(p.j1))} - ${esc(apellido(p.j2))}`;
+    }
+    function parejaTitulo(p) {
+      return p ? `${esc(p.j1)} y ${esc(p.j2)}` : "";
+    }
+    function parseFechaLocal(iso) {
+      const [y, m, d] = (iso || "").split("-").map(Number);
+      return new Date(y, (m || 1) - 1, d || 1);
+    }
+    function diaHorario(h) {
+      if (!h || !h.fecha) return "";
+      return DIAS[parseFechaLocal(h.fecha).getDay()];
+    }
+    function diaHorarioCorto(h) {
+      if (!h || !h.fecha) return "";
+      const d = parseFechaLocal(h.fecha);
+      return `${DIAS[d.getDay()].slice(0, 3)} ${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+    }
+    function marcador(p) {
+      return (p.sets || []).map(s => `${s.local}-${s.visitante}`).join(" ");
+    }
+    function nombreZona(n) {
+      return String(n || "").replace(/^Grupo/, "Zona");
+    }
+
+    // Orden fijo de las parejas de una zona (1, 2, 3...)
+    function parejasDeZona(g) {
+      if (g.parejas && g.parejas.length) return g.parejas;
+      const lista = [];
+      g.partidos.forEach(p => [p.local, p.visitante].forEach(x => {
+        if (x && !lista.some(y => mismaPareja(x, y))) lista.push(x);
+      }));
+      return lista;
+    }
+
+    function renderizarZona(g) {
+      const parejas = parejasDeZona(g);
+      const num = (p) => parejas.findIndex(x => mismaPareja(x, p)) + 1;
+      const jugados = g.partidos.filter(p => p.cerrado).length;
+      const hayResultados = jugados > 0;
+      const tabla = g.tabla || [];
+      const clasificados = hayResultados ? tabla.slice(0, 2).map(f => f.pareja) : [];
+      const letra = nombreZona(g.nombre).replace(/^Zona\s*/, "");
+
+      const filasParejas = parejas.map((p, k) => {
+        const fila = tabla.find(f => mismaPareja(f.pareja, p));
+        const clasifica = clasificados.some(c => mismaPareja(c, p));
+        return `
+          <div class="zona-pareja ${clasifica ? "clasifica" : ""}" title="${parejaTitulo(p)}">
+            <span class="zona-num">${k + 1}.</span>
+            <span class="zona-nombre">${parejaHTMLCorta(p)}</span>
+            ${hayResultados ? `<span class="zona-pts">${fila ? fila.pts || 0 : 0} pts</span>` : ""}
+          </div>`;
+      }).join("");
+
+      const filasCruces = g.partidos.map(p => {
+        const nL = num(p.local), nV = num(p.visitante);
+        const gL = p.cerrado && mismaPareja(p.ganador, p.local);
+        const gV = p.cerrado && mismaPareja(p.ganador, p.visitante);
+        let detalle;
+        if (p.cerrado) detalle = `<span class="cruce-resultado">${marcador(p)}</span>`;
+        else if (p.cancha) detalle = `<span class="cruce-vivo">● ${esc(p.cancha.nombre)}</span>`;
+        else if (p.horario) detalle = `<span class="cruce-dia">${diaHorario(p.horario)}</span><span class="cruce-hora">${esc(p.horario.hora)} hs</span>`;
+        else detalle = `<span class="cruce-pendiente">A confirmar</span>`;
+        return `
+          <div class="zona-cruce ${p.cerrado ? "jugado" : ""}" title="${parejaTitulo(p.local)} vs ${parejaTitulo(p.visitante)}">
+            <span class="cruce-vs"><b class="${gL ? "gano" : ""}">${nL}</b> VS <b class="${gV ? "gano" : ""}">${nV}</b></span>
+            ${detalle}
+          </div>`;
+      }).join("");
+
+      return `
+        <div class="zona-card">
+          <div class="zona-header">
+            <div class="zona-titulo"><span>ZONA</span><b>${esc(letra)}</b></div>
+            <span class="zona-progreso">${jugados}/${g.partidos.length} jugados</span>
+          </div>
+          <div class="zona-cuerpo">
+            <div class="zona-col">
+              <div class="zona-col-titulo">Parejas</div>
+              ${filasParejas}
+            </div>
+            <div class="zona-col">
+              <div class="zona-col-titulo">Cruces · Horarios</div>
+              ${filasCruces}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function parejaHTMLCorta(p) {
+      if (!p) return "Por definir";
+      const a = (nombre, uid) => {
+        const txt = esc(apellido(nombre));
+        if (!uid || /^(sim_|manual_)/.test(String(uid))) return txt;
+        return `<a class="link-jugador" href="perfil.html?uid=${uid}">${txt}</a>`;
+      };
+      return `${a(p.j1, p.uid1)} - ${a(p.j2, p.uid2)}`;
+    }
+
+    function cajaLlave(p) {
+      const gL = !p.bye && p.cerrado && mismaPareja(p.ganador, p.local);
+      const gV = !p.bye && p.cerrado && mismaPareja(p.ganador, p.visitante);
+      let medio = "";
+      let estado = "";
+      if (p.bye) { medio = `<span class="llave-info gris">Pasa directo</span>`; estado = "bye"; }
+      else if (p.cerrado) { medio = `<span class="llave-info resultado">${marcador(p)}</span>`; estado = "jugado"; }
+      else if (p.cancha && p.local && p.visitante) { medio = `<span class="llave-info vivo">● En juego · ${esc(p.cancha.nombre)}</span>`; estado = "vivo"; }
+      else if (p.horario) { medio = `<span class="llave-info hora">${esc(p.horario.hora)}</span><span class="llave-info dia">${diaHorarioCorto(p.horario)}</span>`; }
+      else medio = `<span class="llave-info gris">${p.local && p.visitante ? "Horario a confirmar" : ""}</span>`;
+
+      const fila = (pareja, gano) => `
+        <div class="llave-pareja ${gano ? "ganadora" : ""} ${pareja ? "" : "vacia"}" title="${parejaTitulo(pareja)}">
+          ${pareja ? parejaHTMLCorta(pareja) : (p.bye ? "—" : "&nbsp;")}
+        </div>`;
+
+      return `
+        <div class="llave-box ${estado}">
+          ${fila(p.local, gL)}
+          <div class="llave-medio">${medio}</div>
+          ${fila(p.visitante, gV)}
+        </div>`;
+    }
+
+    function renderizarLlaves(bracket) {
+      const rondas = bracket.rondas;
+      let html = `<div class="llaves-scroll"><div class="llaves">`;
+      rondas.forEach((r, ri) => {
+        const esFinal = ri === rondas.length - 1;
+        let cuerpo = "";
+        if (esFinal) {
+          cuerpo = `<div class="llave-slot unica">${cajaLlave(r.partidos[0])}</div>`;
+        } else {
+          for (let k = 0; k < r.partidos.length; k += 2) {
+            cuerpo += `
+              <div class="llave-par">
+                <div class="llave-slot">${cajaLlave(r.partidos[k])}</div>
+                <div class="llave-slot">${r.partidos[k + 1] ? cajaLlave(r.partidos[k + 1]) : ""}</div>
+              </div>`;
+          }
+        }
+        html += `
+          <div class="llave-col ${ri === 0 ? "primera" : ""} ${esFinal ? "final" : ""}">
+            <div class="llave-col-titulo">${esc(r.nombre)}</div>
+            <div class="llave-col-cuerpo">${cuerpo}</div>
+          </div>`;
+      });
+      const final = rondas[rondas.length - 1].partidos[0];
+      if (final && final.cerrado && final.ganador) {
+        html += `
+          <div class="llave-col campeon-col">
+            <div class="llave-col-titulo">Campeones</div>
+            <div class="llave-col-cuerpo"><div class="llave-slot unica">
+              <div class="llave-campeon">🏆<div>${parejaHTMLCorta(final.ganador)}</div></div>
+            </div></div>
+          </div>`;
+      }
+      html += `</div></div>`;
+      return html;
+    }
+
+    function todosLosPartidos(bracket) {
+      return [
+        ...bracket.grupos.flatMap(g => g.partidos.map(p => ({ p, fase: nombreZona(g.nombre) }))),
+        ...bracket.rondas.flatMap(r => r.partidos.map(p => ({ p, fase: r.nombre })))
+      ].filter(x => !x.p.bye && x.p.local && x.p.visitante);
+    }
+
+    function renderizarEnVivo(bracket) {
+      const vivos = todosLosPartidos(bracket).filter(x => !x.p.cerrado && x.p.cancha)
+        .sort((a, b) => (a.p.cancha.nombre || "").localeCompare(b.p.cancha.nombre || "", "es", { numeric: true }));
+      if (!vivos.length) return "";
+      return `
+        <div class="seccion-cuadro">
+          <h2><span class="vivo-punto"></span> Jugándose ahora</h2>
+          <div class="vivo-grid">
+            ${vivos.map(x => `
+              <div class="vivo-card">
+                <div class="vivo-cancha">🎾 ${esc(x.p.cancha.nombre)}</div>
+                <div class="vivo-fase">${esc(x.fase)}</div>
+                <div class="vivo-pareja">${parejaHTML(x.p.local)}</div>
+                <div class="vivo-vs">vs</div>
+                <div class="vivo-pareja">${parejaHTML(x.p.visitante)}</div>
+              </div>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    function renderizarProgramacion(bracket) {
+      const conHorario = todosLosPartidos(bracket).filter(x => x.p.horario && x.p.horario.fecha);
+      if (!conHorario.length) return "";
+      const porDia = {};
+      conHorario.forEach(x => { (porDia[x.p.horario.fecha] = porDia[x.p.horario.fecha] || []).push(x); });
+      const dias = Object.keys(porDia).sort();
+      return `
+        <div class="seccion-cuadro">
+          <h2>Programación</h2>
+          <div class="prog-dias">
+            ${dias.map(f => `
+              <div class="prog-dia">
+                <div class="prog-dia-titulo">${diaHorario({ fecha: f })} ${String(parseFechaLocal(f).getDate()).padStart(2, "0")}/${String(parseFechaLocal(f).getMonth() + 1).padStart(2, "0")}</div>
+                ${porDia[f].sort((a, b) => (a.p.horario.hora || "").localeCompare(b.p.horario.hora || "")).map(x => {
+                  let estado = `<span class="prog-estado">Pendiente</span>`;
+                  if (x.p.cerrado) estado = `<span class="prog-estado jugado">${marcador(x.p)}</span>`;
+                  else if (x.p.cancha) estado = `<span class="prog-estado vivo">● ${esc(x.p.cancha.nombre)}</span>`;
+                  return `
+                    <div class="prog-fila ${x.p.cerrado ? "jugado" : ""}">
+                      <span class="prog-hora">${esc(x.p.horario.hora)}</span>
+                      <span class="prog-fase">${esc(x.fase)}</span>
+                      <span class="prog-parejas">
+                        <span class="${x.p.cerrado && mismaPareja(x.p.ganador, x.p.local) ? "gano" : ""}">${parejaHTMLCorta(x.p.local)}</span>
+                        <em>vs</em>
+                        <span class="${x.p.cerrado && mismaPareja(x.p.ganador, x.p.visitante) ? "gano" : ""}">${parejaHTMLCorta(x.p.visitante)}</span>
+                      </span>
+                      ${estado}
+                    </div>`;
+                }).join("")}
+              </div>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    function renderizarTorneo(torneo) {
+      const contenido = document.getElementById("contenido");
+      const tipoTexto = torneo.tipo === "suma" ? `Suma ${torneo.sumaMinima}` : (torneo.categoria || "General");
+      const fecha = torneo.fecha
+        ? new Date(torneo.fecha + "T00:00:00").toLocaleDateString("es-AR", {
+            weekday: "long", day: "2-digit", month: "long", year: "numeric"
+          })
+        : "-";
+
+      const estado = torneo.estado || "borrador";
+      const enJuego = estado === "habilitado" && !!torneo.bracket;
+      const estadoTexto = enJuego ? "En juego" : ({
+        borrador: "Próximamente",
+        habilitado: "Inscripciones abiertas",
+        finalizado: "Finalizado",
+        suspendido: "Suspendido"
+      }[estado] || estado);
+      const estadoClase = enJuego ? "en-juego" : estado;
+
+      let campeonesHTML = "";
+      if (torneo.campeon && torneo.subcampeon) {
+        campeonesHTML = `
+          <div class="campeones-seccion">
+            <div class="campeon-card campeon">
+              <div class="posicion">1°</div>
+              <div class="titulo">Campeones</div>
+              <div class="jugadores">${linkJugador(torneo.campeon.nombre1, torneo.campeon.uid1)}<br>+<br>${linkJugador(torneo.campeon.nombre2, torneo.campeon.uid2)}</div>
+              <div class="categorias">${esc(torneo.campeon.categoria1 || "-")} / ${esc(torneo.campeon.categoria2 || "-")}</div>
+            </div>
+            <div class="campeon-card subcampeon">
+              <div class="posicion">2°</div>
+              <div class="titulo">Subcampeones</div>
+              <div class="jugadores">${linkJugador(torneo.subcampeon.nombre1, torneo.subcampeon.uid1)}<br>+<br>${linkJugador(torneo.subcampeon.nombre2, torneo.subcampeon.uid2)}</div>
+              <div class="categorias">${esc(torneo.subcampeon.categoria1 || "-")} / ${esc(torneo.subcampeon.categoria2 || "-")}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const bracket = normalizarBracket(torneo.bracket);
+
+      let vivoHTML = "", zonasHTML = "", llavesHTML = "", programacionHTML = "";
+      if (bracket) {
+        if (estado !== "finalizado") vivoHTML = renderizarEnVivo(bracket);
+        if (bracket.grupos.length) {
+          zonasHTML = `
+            <div class="seccion-cuadro">
+              <h2>Fase de zonas</h2>
+              <div class="zonas-grid">${bracket.grupos.map(renderizarZona).join("")}</div>
+            </div>`;
+        }
+        if (bracket.rondas.length) {
+          llavesHTML = `
+            <div class="seccion-cuadro">
+              <h2>${bracket.grupos.length ? "Llaves" : "Cuadro del torneo"}</h2>
+              ${renderizarLlaves(bracket)}
+            </div>`;
+        } else if (estado !== "finalizado") {
+          llavesHTML = `
+            <div class="seccion-cuadro">
+              <h2>Llaves</h2>
+              <p class="aviso-llaves-pub">
+                ${bracket.grupos.length
+                  ? "Las llaves se arman cuando terminan las zonas. ¡Volvé pronto!"
+                  : "La organización está armando las llaves. ¡Volvé pronto!"}
+              </p>
+            </div>`;
+        }
+        programacionHTML = renderizarProgramacion(bracket);
+      }
+
+      contenido.innerHTML = `
+        <a class="volver-link" href="torneos.html">← Todos los torneos</a>
+
+        <div class="circuito-banner">
+          <div class="circuito-izq">
+            <div class="circuito-titulo">CIRCUITO ${torneo.fecha ? torneo.fecha.slice(0, 4) : new Date().getFullYear()}</div>
+            <h1>${esc(torneo.nombre)}</h1>
+            <div class="circuito-fecha">📅 ${fecha}</div>
+          </div>
+          <div class="circuito-der">
+            <img src="img/logo.png" alt="La Curva Pádel Indoor" class="circuito-logo">
+            <div class="circuito-categoria">${esc(tipoTexto)} ${({ masculino: "Caballeros", femenino: "Damas", mixto: "Mixto" })[torneo.genero] || ""}</div>
+            <div class="estado-torneo ${estadoClase}"><span class="estado-dot"></span>${estadoTexto}</div>
+          </div>
+        </div>
+        ${torneo.simulado ? `<div class="aviso-simulado">⚠ Torneo de prueba (simulado): las parejas son ficticias y no suma puntos al ranking.</div>` : ""}
+
+        <div class="torneo-header-card" style="${(torneo.descripcion || (!bracket && estado === "habilitado") || (torneo.premios && (torneo.premios.primero || torneo.premios.segundo || torneo.premios.imagen1 || torneo.premios.imagen2)) || torneo.campeon) ? "" : "display:none;"}">
+          ${torneo.descripcion ? `<p style="color:var(--gris); margin-bottom:20px;">${esc(torneo.descripcion)}</p>` : ""}
+          ${!bracket && estado === "habilitado" ? `<p style="color:var(--gris); margin-bottom:20px;">El cuadro se publica cuando se cierren las inscripciones. <a href="index.html#torneos" style="color: var(--acento);">Inscribite desde la página de inicio →</a></p>` : ""}
+
+          ${torneo.premios && (torneo.premios.primero || torneo.premios.segundo || torneo.premios.imagen1 || torneo.premios.imagen2) ? `
+            <div class="premios-torneo">
+              ${torneo.premios.primero || torneo.premios.imagen1 ? `
+                <div class="premio-card primero">
+                  ${torneo.premios.imagen1 ? `<img class="premio-imagen" data-premio="primero" alt="Premio campeón">` : ""}
+                  <div class="pos">1°</div>
+                  <div class="titulo">Premio campeón</div>
+                  <div class="descripcion">${esc(torneo.premios.primero || "")}</div>
+                </div>
+              ` : ""}
+              ${torneo.premios.segundo || torneo.premios.imagen2 ? `
+                <div class="premio-card segundo">
+                  ${torneo.premios.imagen2 ? `<img class="premio-imagen" data-premio="segundo" alt="Premio subcampeón">` : ""}
+                  <div class="pos">2°</div>
+                  <div class="titulo">Premio subcampeón</div>
+                  <div class="descripcion">${esc(torneo.premios.segundo || "")}</div>
+                </div>
+              ` : ""}
+            </div>
+          ` : ""}
+
+          ${campeonesHTML}
+        </div>
+
+        ${bracket ? `
+          <div class="buscador-torneo">
+            <input id="buscarEnTorneo" placeholder="🔍 Buscá un jugador para ver sus partidos..." oninput="filtrarEnTorneo(this.value)" value="${esc(busquedaTorneo)}">
+            <span class="en-vivo-tag">● Se actualiza en vivo</span>
+          </div>
+          <p id="resultadoBusquedaTorneo" class="resultado-busqueda-torneo"></p>
+        ` : ""}
+
+        ${vivoHTML}
+        ${zonasHTML}
+        ${llavesHTML}
+        ${programacionHTML}
+      `;
+
+      aplicarBusqueda();
+      cargarImagenesPremio(torneo);
+    }
+
+    // ============================================
+    // BUSCADOR DE JUGADOR DENTRO DEL TORNEO
+    // ============================================
+    let busquedaTorneo = "";
+
+    window.filtrarEnTorneo = function(valor) {
+      busquedaTorneo = valor || "";
+      aplicarBusqueda();
+    };
+
+    function aplicarBusqueda() {
+      const term = busquedaTorneo.trim().toLowerCase();
+      const items = document.querySelectorAll(".llave-box, .zona-cruce, .zona-pareja, .prog-fila, .vivo-card");
+      let n = 0;
+      items.forEach(el => {
+        const coincide = term.length >= 2 && (el.textContent + " " + (el.title || "")).toLowerCase().includes(term);
+        el.classList.toggle("resaltado", coincide);
+        el.classList.toggle("atenuado", term.length >= 2 && !coincide);
+        if (coincide && !el.matches(".zona-pareja")) n++;
+      });
+      const res = document.getElementById("resultadoBusquedaTorneo");
+      if (res) {
+        res.textContent = term.length >= 2
+          ? (n > 0 ? `${n} partido(s) con "${busquedaTorneo.trim()}" resaltados` : `No hay partidos con "${busquedaTorneo.trim()}"`)
+          : "";
+      }
+    }
+
+    // ============================================
+    // IMÁGENES DE LOS PREMIOS
+    // ============================================
+    const cacheImagenes = {};
+    async function cargarImagenesPremio(torneo) {
+      for (const img of document.querySelectorAll("img[data-premio]")) {
+        const puesto = img.dataset.premio;
+        if (cacheImagenes[puesto] === undefined) {
+          try { cacheImagenes[puesto] = srcSeguro((await get(ref(db, `imagenesPremios/${torneoId}/${puesto}`))).val()); }
+          catch (e) { cacheImagenes[puesto] = ""; }
+        }
+        if (cacheImagenes[puesto]) img.src = cacheImagenes[puesto]; else img.remove();
+      }
+    }
+
+    // ============================================
+    // CARGA DEL TORNEO
+    // ============================================
+    const params = new URLSearchParams(window.location.search);
+    const torneoId = params.get("id");
+    const contenido = document.getElementById("contenido");
+
+
+    (() => {
+      if (!torneoId) {
+        contenido.innerHTML = `
+          <a class="volver-link" href="index.html">← Volver al inicio</a>
+          <p style="color:var(--gris); text-align:center; padding:40px;">Torneo no especificado.</p>
+        `;
+        return;
+      }
+
+      const torneoRef = ref(db, "torneos/" + torneoId);
+
+      onValue(torneoRef, (snap) => {
+        const torneo = snap.val();
+
+        if (!torneo) {
+          contenido.innerHTML = `
+            <a class="volver-link" href="index.html">← Volver al inicio</a>
+            <p style="color:var(--gris); text-align:center; padding:40px;">El torneo no existe.</p>
+          `;
+          return;
+        }
+
+        try {
+          const enfocado = document.activeElement && document.activeElement.id === "buscarEnTorneo";
+          renderizarTorneo(torneo);
+          if (enfocado) {
+            const inp = document.getElementById("buscarEnTorneo");
+            if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+          }
+        } catch (e) {
+          console.error(e);
+          contenido.innerHTML = `
+            <a class="volver-link" href="index.html">← Volver al inicio</a>
+            <p style="color:var(--gris); text-align:center; padding:40px;">No se pudo mostrar el torneo.</p>
+          `;
+        }
+      }, (error) => {
+        console.error(error);
+        contenido.innerHTML = `
+          <a class="volver-link" href="index.html">← Volver al inicio</a>
+          <p style="color:var(--gris); text-align:center; padding:40px;">No se pudo cargar el torneo.</p>
+        `;
+      });
+    })();
+  </script>
+</body>
+</html>

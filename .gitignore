@@ -1,0 +1,4 @@
+_backups/
+*.zip
+node_modules/
+.vercel

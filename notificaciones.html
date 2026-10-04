@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script src="js/tema.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificaciones | La Curva Pádel Indoor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .notif-page-item {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      padding: 20px 25px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 15px;
+      border-left: 4px solid var(--gris-oscuro);
+      transition: var(--transicion);
+    }
+    .notif-page-item.no-leida {
+      border-left-color: var(--verde);
+      background: linear-gradient(145deg, rgba(180,227,61,0.08), var(--card));
+    }
+    .notif-page-item .notif-icono {
+      width: 45px;
+      height: 45px;
+      font-size: 1.2em;
+      background: rgba(180,227,61,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--acento);
+      flex-shrink: 0;
+    }
+    .notif-page-item .notif-contenido { flex: 1; }
+    .notif-page-item .notif-titulo {
+      font-size: 1.05em;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--blanco);
+    }
+    .notif-page-item .notif-texto {
+      font-size: 0.95em;
+      color: var(--gris);
+      line-height: 1.5;
+    }
+    .notif-page-item .notif-acciones {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .notif-page-item .notif-acciones button {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.78em;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-app">
+
+    <aside class="sidebar" id="sidebarWrap"></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+    <div class="contenido-app">
+
+      <header class="header-top" id="headerTopWrap"></header>
+
+      <main class="main-content">
+
+        <section class="seccion" style="padding-top:0;">
+
+          <a class="volver-link" href="index.html">← Volver al inicio</a>
+
+          <div class="seccion-header">
+            <div class="seccion-titulo">
+              <span class="etiqueta">Historial</span>
+              <h2>Mis <span>notificaciones</span></h2>
+            </div>
+          </div>
+
+          <p style="color:var(--gris); margin-bottom:25px;">Acá ves todo tu historial completo.</p>
+
+          <div id="listaCompleta">
+            <p style="color:var(--gris); text-align:center; padding:40px;">Cargando notificaciones...</p>
+          </div>
+
+        </section>
+
+      </main>
+
+      <footer>
+        <div class="footer-info">
+          <strong>LA CURVA PÁDEL INDOOR</strong>
+          <span class="separador"></span>
+          <span>Av. San Martín 2479</span>
+          <span class="separador"></span>
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">📷 @lacurvapadelindoor</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+      from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, update, get, push, set, remove }
+      from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import { mostrarToast } from "./js/toast.js";
+    import { iniciarLayout, cargarFotoPerfil, limpiarCacheFoto } from "./js/layout.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.toastExito = (m) => mostrarToast(m, "exito");
+    window.toastError = (m) => mostrarToast(m, "error");
+    window.toastInfo  = (m) => mostrarToast(m, "info");
+
+    // ============================================
+    // MENÚ LATERAL + BARRA SUPERIOR (compartido)
+    // ============================================
+    iniciarLayout({ auth, db, activo: "inicio" });
+
+    // ============================================
+    // HELPERS
+    // ============================================
+    function iconoTipoNotif(tipo) {
+      if (tipo === "solicitud_pareja") return "👥";
+      if (tipo === "solicitud_aceptada") return "✅";
+      if (tipo === "solicitud_rechazada") return "❌";
+      if (tipo === "inscripcion_cancelada") return "🚫";
+      if (tipo === "torneo_suspendido") return "⚠️";
+      if (tipo === "torneo_finalizado") return "🏆";
+      if (tipo === "partido_ganado") return "✅";
+      if (tipo === "partido_perdido") return "❌";
+      if (tipo === "torneo_cuadro") return "📋";
+      if (tipo === "horario_partido") return "🕒";
+      if (tipo === "torneo_nuevo") return "🎾";
+      if (tipo === "cancha_asignada") return "🎾";
+      if (tipo === "premio_recibido") return "🏆";
+      if (tipo === "pago_aprobado") return "💳";
+      if (tipo === "pago_rechazado") return "⚠️";
+      return "🔔";
+    }
+
+    // ============================================
+    // CARGA DE NOTIFICACIONES
+    // ============================================
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      onValue(ref(db, "notificaciones/" + user.uid), (snap) => {
+        const notifs = snap.val() || {};
+        const items = Object.entries(notifs).sort((a, b) =>
+          new Date(b[1].fecha) - new Date(a[1].fecha)
+        );
+
+        const cont = document.getElementById("listaCompleta");
+
+        if (items.length === 0) {
+          cont.innerHTML = `<p style="color:var(--gris); text-align:center; padding:40px;">Sin notificaciones aún.</p>`;
+          return;
+        }
+
+        cont.innerHTML = "";
+        items.forEach(([id, n]) => {
+          const div = document.createElement("div");
+          div.className = "notif-page-item" + (n.leida ? "" : " no-leida");
+
+          let accionesHTML = "";
+          if (n.tipo === "solicitud_pareja" && n.estado === "pendiente") {
+            accionesHTML = `
+              <div class="notif-acciones">
+                <button class="btn-aceptar" onclick="aceptarSolicitud('${id}','${n.solicitudId}')">Aceptar</button>
+                <button class="btn-rechazar" onclick="rechazarSolicitud('${id}','${n.solicitudId}')">Rechazar</button>
+              </div>
+            `;
+          }
+
+          div.innerHTML = `
+            <div class="notif-icono">${iconoTipoNotif(n.tipo)}</div>
+            <div class="notif-contenido">
+              <div class="notif-titulo">${n.titulo}</div>
+              <div class="notif-texto">${n.texto}</div>
+              ${accionesHTML}
+            </div>
+          `;
+          cont.appendChild(div);
+        });
+      });
+    });
+
+    // ============================================
+    // ACEPTAR SOLICITUD DE PAREJA
+    // ============================================
+    window.aceptarSolicitud = async function(notifId, solicitudId) {
+      try {
+        const solSnap = await get(ref(db, "solicitudesPareja/" + solicitudId));
+        const sol = solSnap.val();
+        if (!sol) return window.toastError("La solicitud ya no existe");
+        if (sol.estado !== "pendiente") return window.toastError("Esta solicitud ya fue procesada");
+
+        const torSnap = await get(ref(db, "torneos/" + sol.torneoId));
+        const torneo = torSnap.val() || {};
+        if (torneo.estado !== "habilitado" || torneo.bracket) {
+          return window.toastError("Las inscripciones de ese torneo ya están cerradas");
+        }
+
+        const inscSnap = await get(ref(db, "inscripciones"));
+        const inscs = Object.values(inscSnap.val() || {}).filter(i =>
+          i.torneoId === sol.torneoId && i.estado === "activa" && i.pareja && i.pareja.jugador1 && i.pareja.jugador2);
+        const estaInscripto = (uid) => inscs.some(i => i.pareja.jugador1.uid === uid || i.pareja.jugador2.uid === uid);
+        if (estaInscripto(auth.currentUser.uid)) return window.toastError("Ya estás inscripto en ese torneo con otra pareja");
+        if (estaInscripto(sol.deUid)) return window.toastError(`${sol.deNombre} ya se inscribió con otra pareja`);
+
+        const miSnap = await get(ref(db, "jugadores/" + auth.currentUser.uid));
+        const miData = miSnap.val() || {};
+
+        await update(ref(db, "solicitudesPareja/" + solicitudId), {
+          estado: "aceptada",
+          fechaRespuesta: new Date().toISOString()
+        });
+
+        await push(ref(db, "inscripciones"), {
+          torneoId: sol.torneoId,
+          torneoNombre: sol.torneoNombre,
+          genero: torneo.genero,
+          categoria: torneo.tipo === "suma" ? null : torneo.categoria,
+          tipoTorneo: torneo.tipo,
+          sumaMinima: torneo.sumaMinima || null,
+          disponibilidad: sol.disponibilidad || { viernes: [], sabado: [], domingo: [] },
+          pareja: {
+            jugador1: { uid: sol.deUid, nombre: sol.deNombre, categoria: sol.deCategoria },
+            jugador2: { uid: auth.currentUser.uid, nombre: sol.paraNombre, categoria: miData.categoria }
+          },
+          estado: "activa",
+          fecha: new Date().toISOString()
+        });
+
+        await push(ref(db, "notificaciones/" + sol.deUid), {
+          tipo: "solicitud_aceptada",
+          titulo: "Solicitud aceptada",
+          texto: `${sol.paraNombre} aceptó tu solicitud. Ya están inscriptos en "${sol.torneoNombre}".`,
+          leida: false,
+          fecha: new Date().toISOString()
+        });
+
+        await update(ref(db, "notificaciones/" + auth.currentUser.uid + "/" + notifId), { leida: true });
+        window.toastExito("¡Solicitud aceptada!");
+      } catch (e) {
+        window.toastError("Error: " + e.message);
+      }
+    };
+
+    // ============================================
+    // RECHAZAR SOLICITUD DE PAREJA
+    // ============================================
+    window.rechazarSolicitud = async function(notifId, solicitudId) {
+      try {
+        const solSnap = await get(ref(db, "solicitudesPareja/" + solicitudId));
+        const sol = solSnap.val();
+        if (!sol) return window.toastError("La solicitud ya no existe");
+
+        await update(ref(db, "solicitudesPareja/" + solicitudId), {
+          estado: "rechazada",
+          fechaRespuesta: new Date().toISOString()
+        });
+
+        await push(ref(db, "notificaciones/" + sol.deUid), {
+          tipo: "solicitud_rechazada",
+          titulo: "Solicitud rechazada",
+          texto: `${sol.paraNombre} rechazó tu solicitud para "${sol.torneoNombre}".`,
+          leida: false,
+          fecha: new Date().toISOString()
+        });
+
+        await update(ref(db, "notificaciones/" + auth.currentUser.uid + "/" + notifId), { leida: true });
+        window.toastInfo("Solicitud rechazada");
+      } catch (e) {
+        window.toastError("Error: " + e.message);
+      }
+    };
+
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
+    document.addEventListener("DOMContentLoaded", () => {
+    });
+  </script>
+</body>
+</html>

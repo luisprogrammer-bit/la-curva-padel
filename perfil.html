@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script src="js/tema.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil | La Curva Pádel Indoor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .perfil-header {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      padding: 35px;
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+      border-left: 4px solid var(--verde);
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .perfil-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--verde-oscuro), var(--verde-profundo));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 3em;
+      color: var(--acento);
+      flex-shrink: 0;
+      border: 3px solid rgba(180,227,61,0.3);
+    }
+    .perfil-info { flex: 1; min-width: 250px; }
+    .perfil-info h1 {
+      font-size: 2.2em;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--blanco);
+    }
+    .perfil-info .bio {
+      color: var(--gris);
+      font-size: 0.95em;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    .perfil-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .perfil-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: rgba(180,227,61,0.12);
+      color: var(--acento);
+      border-radius: 50px;
+      font-size: 0.8em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .perfil-tag.neutral {
+      background: var(--fondo-3);
+      color: var(--gris);
+    }
+    .perfil-tag.ranking {
+      background: linear-gradient(135deg, rgba(255,193,7,0.2), rgba(255,193,7,0.08));
+      color: var(--oro);
+      border: 1px solid rgba(255,193,7,0.4);
+      font-size: 0.85em;
+    }
+
+    .perfil-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      border-top: 3px solid var(--verde);
+    }
+    .stat-card .valor {
+      font-size: 2.2em;
+      font-weight: 800;
+      color: var(--acento);
+      line-height: 1;
+      margin-bottom: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-card .etiqueta {
+      font-size: 0.75em;
+      color: var(--gris);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .stat-card.dorada { border-top-color: #ffc107; }
+    .stat-card.dorada .valor { color: var(--oro); }
+    .stat-card.azul { border-top-color: #42a5f5; }
+    .stat-card.azul .valor { color: var(--celeste); }
+
+    .perfil-seccion { margin-bottom: 40px; }
+    .perfil-seccion h2 {
+      color: var(--acento);
+      font-size: 1.1em;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      font-weight: 800;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--borde);
+    }
+
+    .logros-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+    }
+    .logro-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-left: 4px solid #ffc107;
+      transition: var(--transicion);
+    }
+    .logro-card:hover {
+      transform: translateY(-3px);
+      background: var(--card-hover);
+    }
+    .logro-card.subcampeon { border-left-color: #c0c0c0; }
+    .logro-card .logro-icono {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8em;
+      flex-shrink: 0;
+    }
+    .logro-card.campeon .logro-icono {
+      background: rgba(255,193,7,0.15);
+      border: 2px solid rgba(255,193,7,0.4);
+    }
+    .logro-card.subcampeon .logro-icono {
+      background: rgba(192,192,192,0.15);
+      border: 2px solid rgba(192,192,192,0.4);
+    }
+    .logro-card .logro-info { flex: 1; min-width: 0; }
+    .logro-card .logro-tipo {
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    .logro-card.campeon .logro-tipo { color: var(--oro); }
+    .logro-card.subcampeon .logro-tipo { color: var(--plata); }
+    .logro-card .logro-torneo {
+      color: var(--blanco);
+      font-weight: 700;
+      font-size: 0.95em;
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+    .logro-card .logro-meta {
+      color: var(--gris);
+      font-size: 0.8em;
+    }
+
+    /* PREMIOS */
+    .premios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    .premio-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      border-left: 4px solid #ffc107;
+      transition: var(--transicion);
+    }
+    .premio-card.p2 { border-left-color: #c0c0c0; }
+    .premio-card.p3 { border-left-color: #cd7f32; }
+    .premio-card:hover {
+      transform: translateY(-3px);
+      background: var(--card-hover);
+    }
+    .premio-card .premio-icono {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6em;
+      flex-shrink: 0;
+    }
+    .premio-card.p1 .premio-icono {
+      background: rgba(255,193,7,0.15);
+      border: 2px solid rgba(255,193,7,0.4);
+    }
+    .premio-card.p2 .premio-icono {
+      background: rgba(192,192,192,0.15);
+      border: 2px solid rgba(192,192,192,0.4);
+    }
+    .premio-card.p3 .premio-icono {
+      background: rgba(205,127,50,0.15);
+      border: 2px solid rgba(205,127,50,0.4);
+    }
+    .premio-card .premio-info { flex: 1; min-width: 0; }
+    .premio-card .premio-pos {
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    .premio-card.p1 .premio-pos { color: var(--oro); }
+    .premio-card.p2 .premio-pos { color: var(--plata); }
+    .premio-card.p3 .premio-pos { color: #cd7f32; }
+    .premio-card .premio-titulo {
+      color: var(--blanco);
+      font-weight: 700;
+      font-size: 0.95em;
+      margin-bottom: 5px;
+      line-height: 1.3;
+    }
+    .premio-card .premio-meta {
+      color: var(--gris);
+      font-size: 0.8em;
+      margin-bottom: 8px;
+    }
+    .premio-card .premio-regalo {
+      display: inline-block;
+      padding: 5px 12px;
+      background: rgba(180,227,61,0.15);
+      color: var(--acento);
+      border-radius: 20px;
+      font-size: 0.78em;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .historial-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .historial-tabla th {
+      background: var(--fondo-3);
+      padding: 15px;
+      text-align: left;
+      font-size: 0.72em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--acento);
+      font-weight: 700;
+    }
+    .historial-tabla td {
+      padding: 14px 15px;
+      border-top: 1px solid var(--borde);
+      font-size: 0.9em;
+      color: var(--gris);
+    }
+    .historial-tabla tr:hover td {
+      background: rgba(180,227,61,0.04);
+    }
+    .resultado-badge-mini {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .badge-campeon { background: rgba(255,193,7,0.2); color: var(--oro); }
+    .badge-subcampeon { background: rgba(192,192,192,0.2); color: var(--plata); }
+    .badge-fase { background: rgba(66,165,245,0.2); color: var(--celeste); }
+
+    .partidos-lista { display: flex; flex-direction: column; gap: 10px; }
+    .partido-hist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      border-left: 4px solid var(--gris-oscuro);
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .partido-hist-item.ganado { border-left-color: var(--verde); }
+    .partido-hist-item.perdido { border-left-color: #ff5252; }
+    .partido-hist-item .partido-info { flex: 1; min-width: 200px; }
+    .partido-hist-item .partido-rival {
+      color: var(--blanco);
+      font-weight: 700;
+      font-size: 0.95em;
+      margin-bottom: 3px;
+    }
+    .partido-hist-item .partido-meta {
+      color: var(--gris);
+      font-size: 0.8em;
+    }
+    .partido-hist-item .partido-resultado {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+    .partido-hist-item .partido-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .partido-hist-item.ganado .partido-badge {
+      background: rgba(180,227,61,0.2);
+      color: var(--acento);
+    }
+    .partido-hist-item.perdido .partido-badge {
+      background: rgba(255,82,82,0.2);
+      color: var(--rojo);
+    }
+    .partido-hist-item .partido-marcador {
+      color: var(--blanco);
+      font-weight: 800;
+      font-size: 0.85em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .perfil-privado {
+      text-align: center;
+      padding: 60px 30px;
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+    }
+    .perfil-privado .candado {
+      font-size: 3em;
+      margin-bottom: 20px;
+      opacity: 0.6;
+    }
+    .perfil-privado h2 {
+      color: var(--blanco);
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+    .perfil-privado p {
+      color: var(--gris);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .premio-foto { width: 84px; height: 84px; object-fit: cover; border-radius: 12px; margin-left: auto; flex-shrink: 0; border: 1px solid var(--borde); }
+    .perfil-avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .perfil-cambiar-foto {
+      font-size: 0.72em;
+      font-weight: 700;
+      color: var(--acento);
+      border: 1px solid rgba(180,227,61,0.4);
+      padding: 5px 12px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transicion);
+    }
+    .perfil-cambiar-foto:hover { background: rgba(180,227,61,0.1); }
+    .perfil-quitar-foto {
+      background: none;
+      border: none;
+      color: var(--gris);
+      font-family: inherit;
+      font-size: 0.7em;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    @media (max-width: 700px) {
+      .perfil-header { padding: 25px; gap: 20px; }
+      .perfil-avatar { width: 80px; height: 80px; font-size: 2em; }
+      .perfil-info h1 { font-size: 1.6em; }
+      .historial-tabla th, .historial-tabla td { padding: 10px 8px; font-size: 0.8em; }
+      .historial-tabla { display: block; overflow-x: auto; white-space: nowrap; }
+      .perfil-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-app">
+
+    <aside class="sidebar" id="sidebarWrap"></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+    <div class="contenido-app">
+
+      <header class="header-top" id="headerTopWrap"></header>
+
+      <main class="main-content">
+
+        <div id="contenido">
+          <div class="volver-link" style="opacity:0.5;">← Volver al inicio</div>
+          <p style="color:var(--gris); text-align:center; padding:60px;">Cargando perfil...</p>
+        </div>
+
+      </main>
+
+      <footer>
+        <div class="footer-info">
+          <strong>LA CURVA PÁDEL INDOOR</strong>
+          <span class="separador"></span>
+          <span>Av. San Martín 2479</span>
+          <span class="separador"></span>
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">📷 @lacurvapadelindoor</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+      from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getDatabase, ref, get, update }
+      from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import { mostrarToast } from "./js/toast.js";
+    import { iniciarLayout, cargarFotoPerfil, limpiarCacheFoto } from "./js/layout.js";
+    import { redimensionarImagen, srcSeguro } from "./js/imagenes.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.toastExito = (m) => mostrarToast(m, "exito");
+    window.toastError = (m) => mostrarToast(m, "error");
+    window.toastInfo  = (m) => mostrarToast(m, "info");
+
+    // ============================================
+    // MENÚ LATERAL + BARRA SUPERIOR (compartido)
+    // ============================================
+    iniciarLayout({ auth, db, activo: "buscador" });
+
+    // ============================================
+    // HELPERS
+    // ============================================
+    function textoGenero(g) {
+      if (g === "masculino") return "Masculino";
+      if (g === "femenino") return "Femenino";
+      if (g === "mixto") return "Mixto";
+      return g || "-";
+    }
+
+    function textoLado(l) {
+      if (l === "drive") return "Drive";
+      if (l === "reves") return "Revés";
+      if (l === "ambos") return "Ambos";
+      return null;
+    }
+
+    function textoMano(m) {
+      if (m === "derecha") return "Diestro";
+      if (m === "izquierda") return "Zurdo";
+      return null;
+    }
+
+    function mapearCategoriaANumero(cat) {
+      if (!cat) return "";
+      const mapa = {
+        primera: "1ra", segunda: "2da", tercera: "3ra", cuarta: "4ta",
+        quinta: "5ta", sexta: "6ta", septima: "7ma", octava: "8va"
+      };
+      return mapa[cat.toLowerCase()] || cat;
+    }
+
+    function textoCategoriaTorneo(cat) {
+      if (!cat) return "";
+      const c = String(cat).toLowerCase();
+      if (c.startsWith("suma")) return `Suma ${c.replace("suma", "")}`;
+      return mapearCategoriaANumero(c);
+    }
+
+    function resultadoBadge(res) {
+      if (res === "campeon") return `<span class="resultado-badge-mini badge-campeon">🏆 Campeón</span>`;
+      if (res === "subcampeon") return `<span class="resultado-badge-mini badge-subcampeon">🥈 Subcampeón</span>`;
+      if (res === "fase") return `<span class="resultado-badge-mini badge-fase">Participó</span>`;
+      return "";
+    }
+
+    function formatearFecha(fechaISO) {
+      if (!fechaISO) return "-";
+      try {
+        const d = new Date(fechaISO);
+        return d.toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" });
+      } catch (e) { return fechaISO; }
+    }
+
+    // ============================================
+    // CARGA DEL PERFIL
+    // ============================================
+    async function cargarPerfil() {
+      const params = new URLSearchParams(window.location.search);
+      const uid = params.get("uid");
+      const contenido = document.getElementById("contenido");
+
+      if (!uid) {
+        contenido.innerHTML = `
+          <a class="volver-link" href="index.html">← Volver al inicio</a>
+          <div class="perfil-privado">
+            <div class="candado">❓</div>
+            <h2>Perfil no especificado</h2>
+            <p>No se indicó qué jugador querés ver.</p>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const snap = await get(ref(db, "jugadores/" + uid));
+        const jugador = snap.val();
+
+        if (!jugador) {
+          contenido.innerHTML = `
+            <a class="volver-link" href="index.html">← Volver al inicio</a>
+            <div class="perfil-privado">
+              <div class="candado">❓</div>
+              <h2>Jugador no encontrado</h2>
+              <p>El jugador que buscás no existe o fue dado de baja.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (jugador.rol === "admin") {
+          contenido.innerHTML = `
+            <a class="volver-link" href="index.html">← Volver al inicio</a>
+            <div class="perfil-privado">
+              <div class="candado">🔒</div>
+              <h2>Perfil privado</h2>
+              <p>Los administradores no tienen perfil público.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (jugador.perfilPublico === false) {
+          const inicial = (jugador.nombre || "?").charAt(0).toUpperCase();
+          contenido.innerHTML = `
+            <a class="volver-link" href="index.html">← Volver al inicio</a>
+            <div class="perfil-header">
+              <div class="perfil-avatar">${inicial}</div>
+              <div class="perfil-info">
+                <h1>${jugador.nombre}</h1>
+                <p class="bio">Este jugador decidió mantener su perfil privado.</p>
+              </div>
+            </div>
+            <div class="perfil-privado">
+              <div class="candado">🔒</div>
+              <h2>Perfil privado</h2>
+              <p>Este jugador decidió no compartir su información pública.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Perfil público
+        const inicial = (jugador.nombre || "?").charAt(0).toUpperCase();
+        const esMiPerfil = !!(auth.currentUser && auth.currentUser.uid === uid);
+        const foto = jugador.tieneFoto ? await cargarFotoPerfil(db, uid) : "";
+        const aArray = (x) => !x ? [] : (Array.isArray(x) ? x : Object.values(x)).filter(Boolean);
+        const historial = aArray(jugador.historial);
+        const historialPartidos = aArray(jugador.historialPartidos)
+          .sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+        const logros = aArray(jugador.logros);
+        const premios = aArray(jugador.premios);
+
+        historial.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        const ultimos3 = historial.slice(0, 3);
+        logros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        premios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+        const torneosJugados = jugador.torneosJugados || jugador.torneos || 0;
+        const torneosGanados = jugador.torneosGanados || 0;
+        const partidosJugados = jugador.partidosJugados || 0;
+        const partidosGanados = jugador.partidosGanados || 0;
+        const winRate = partidosJugados > 0 ? Math.round((partidosGanados / partidosJugados) * 100) : 0;
+        const rachaActual = jugador.rachaActual || 0;
+        const mejorRacha = jugador.mejorRacha || 0;
+
+        const tags = [];
+        if (jugador.categoria) tags.push(`<span class="perfil-tag">🏆 ${jugador.categoria}</span>`);
+        if (jugador.genero) tags.push(`<span class="perfil-tag neutral">${textoGenero(jugador.genero)}</span>`);
+        if (jugador.lado) tags.push(`<span class="perfil-tag neutral">${textoLado(jugador.lado)}</span>`);
+        if (jugador.mano) tags.push(`<span class="perfil-tag neutral">${textoMano(jugador.mano)}</span>`);
+        if (jugador.altura) tags.push(`<span class="perfil-tag neutral">📏 ${jugador.altura}cm</span>`);
+        if (jugador.edad) tags.push(`<span class="perfil-tag neutral">🎂 ${jugador.edad} años</span>`);
+        if (jugador.ciudad) tags.push(`<span class="perfil-tag neutral">📍 ${jugador.ciudad}</span>`);
+
+        let badgeRankingHTML = "";
+        if (jugador.posicionRanking && jugador.posicionRanking.posicion) {
+          const pr = jugador.posicionRanking;
+          const catNum = mapearCategoriaANumero(pr.categoria);
+          const gen = textoGenero(pr.genero);
+          badgeRankingHTML = `<span class="perfil-tag ranking">🏆 #${pr.posicion} en ${catNum} ${gen}</span>`;
+        }
+
+        // PREMIOS
+        let premiosHTML = "";
+        if (premios.length > 0) {
+          premiosHTML = `
+            <div class="perfil-seccion">
+              <h2>Premios recibidos</h2>
+              <div class="premios-grid">
+                ${premios.map(p => {
+                  const pos = p.posicion || 1;
+                  const clasePos = pos === 1 ? "p1" : (pos === 2 ? "p2" : "p3");
+                  const icono = pos === 1 ? "🏆" : (pos === 2 ? "🥈" : "🥉");
+                  const tipoTexto = p.tipo === "jugados" ? "Más jugados" : "Ranking puntos";
+
+                  return `
+                    <div class="premio-card ${clasePos}">
+                      <div class="premio-icono">${icono}</div>
+                      <div class="premio-info">
+                        <div class="premio-pos">${pos}° Puesto · ${tipoTexto}</div>
+                        <div class="premio-titulo">${p.periodoNombre || ""}</div>
+                        <div class="premio-meta">Otorgado el ${formatearFecha(p.fecha)}</div>
+                        ${p.premioTexto ? `<span class="premio-regalo">🎁 ${p.premioTexto}</span>` : ""}
+                      </div>
+                      ${p.conImagen && p.premioId ? `<img class="premio-foto" data-premio-rank="${p.premioId}|${pos}" alt="Premio">` : ""}
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        }
+
+        let logrosHTML = "";
+        if (logros.length > 0) {
+          logrosHTML = `
+            <div class="perfil-seccion">
+              <h2>Logros</h2>
+              <div class="logros-grid">
+                ${logros.map(l => {
+                  const esCampeon = l.tipo === "campeon";
+                  const icono = esCampeon ? "🏆" : "🥈";
+                  const tipoTexto = esCampeon ? "Campeón" : "Subcampeón";
+                  const catTexto = textoCategoriaTorneo(l.categoriaTorneo);
+                  return `
+                    <div class="logro-card ${esCampeon ? "campeon" : "subcampeon"}">
+                      <div class="logro-icono">${icono}</div>
+                      <div class="logro-info">
+                        <div class="logro-tipo">${tipoTexto}</div>
+                        <div class="logro-torneo">${l.torneoNombre}</div>
+                        <div class="logro-meta">${catTexto} · ${formatearFecha(l.fecha)}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        }
+
+        let ultimosHTML = "";
+        if (ultimos3.length > 0) {
+          ultimosHTML = `
+            <div class="perfil-seccion">
+              <h2>Últimos torneos</h2>
+              <div class="logros-grid">
+                ${ultimos3.map(r => `
+                  <div class="logro-card ${r.resultado === "campeon" ? "campeon" : (r.resultado === "subcampeon" ? "subcampeon" : "")}">
+                    <div class="logro-info">
+                      <div class="logro-tipo" style="color:${r.resultado === "campeon" ? "#ffc107" : (r.resultado === "subcampeon" ? "#c0c0c0" : "#42a5f5")}">
+                        ${r.resultado === "campeon" ? "🏆 Campeón" : (r.resultado === "subcampeon" ? "🥈 Subcampeón" : (r.fase || "Participó"))}
+                      </div>
+                      <div class="logro-torneo">${r.torneoId ? `<a href="torneo.html?id=${r.torneoId}" style="color:inherit; text-decoration:none;">${r.torneoNombre}</a>` : r.torneoNombre}</div>
+                      <div class="logro-meta">${r.categoria || "-"} · ${formatearFecha(r.fecha)}</div>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }
+
+        let partidosHTML = "";
+        if (historialPartidos.length > 0) {
+          partidosHTML = `
+            <div class="perfil-seccion">
+              <h2>Últimos partidos</h2>
+              <div class="partidos-lista">
+                ${historialPartidos.slice(0, 5).map(p => `
+                  <div class="partido-hist-item ${p.resultado === "ganado" ? "ganado" : "perdido"}">
+                    <div class="partido-info">
+                      <div class="partido-rival">vs ${p.rival}</div>
+                      <div class="partido-meta">${p.torneoNombre}${p.fase ? " · " + p.fase : ""} · ${formatearFecha(p.fecha)}</div>
+                    </div>
+                    <div class="partido-resultado">
+                      <span class="partido-badge">${p.resultado === "ganado" ? "Ganado" : "Perdido"}</span>
+                      <span class="partido-marcador">${p.marcador || ""}</span>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }
+
+        let historialHTML = "";
+        if (historial.length > 0) {
+          historialHTML = `
+            <div class="perfil-seccion">
+              <h2>Historial de torneos</h2>
+              <table class="historial-tabla">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Torneo</th>
+                    <th>Categoría</th>
+                    <th>Resultado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${historial.map(r => `
+                    <tr>
+                      <td>${formatearFecha(r.fecha)}</td>
+                      <td style="color:var(--blanco);">${r.torneoId ? `<a href="torneo.html?id=${r.torneoId}" style="color:inherit;">${r.torneoNombre}</a>` : r.torneoNombre}</td>
+                      <td>${r.categoria || "-"}</td>
+                      <td>${resultadoBadge(r.resultado)}${r.resultado === "fase" && r.fase ? ` <span style="color:var(--gris); font-size:0.8em;">${r.fase}</span>` : ""}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        contenido.innerHTML = `
+          <a class="volver-link" href="index.html">← Volver al inicio</a>
+
+          <div class="perfil-header">
+            <div class="perfil-avatar-wrap">
+              <div class="perfil-avatar">${foto ? `<img src="${foto}" alt="Foto de perfil">` : inicial}</div>
+              ${esMiPerfil ? `
+                <label class="perfil-cambiar-foto" title="Cambiar foto">
+                  📷 ${foto ? "Cambiar" : "Subir foto"}
+                  <input type="file" accept="image/*" hidden onchange="subirFotoPerfil(this)">
+                </label>
+                ${foto ? `<button class="perfil-quitar-foto" onclick="quitarMiFoto()">Quitar</button>` : ""}
+              ` : ""}
+            </div>
+            <div class="perfil-info">
+              <h1>${jugador.nombre}</h1>
+              ${jugador.bio ? `<p class="bio">${jugador.bio}</p>` : ""}
+              <div class="perfil-tags">
+                ${badgeRankingHTML}
+                ${tags.join("")}
+              </div>
+            </div>
+          </div>
+
+          <div class="perfil-stats">
+            <div class="stat-card">
+              <div class="valor">${torneosJugados}</div>
+              <div class="etiqueta">Torneos jugados</div>
+            </div>
+            <div class="stat-card dorada">
+              <div class="valor">${torneosGanados}</div>
+              <div class="etiqueta">Torneos ganados</div>
+            </div>
+            <div class="stat-card">
+              <div class="valor">${partidosJugados}</div>
+              <div class="etiqueta">Partidos jugados</div>
+            </div>
+            <div class="stat-card">
+              <div class="valor">${partidosGanados}</div>
+              <div class="etiqueta">Partidos ganados</div>
+            </div>
+            <div class="stat-card azul">
+              <div class="valor">${winRate}%</div>
+              <div class="etiqueta">Win rate</div>
+            </div>
+            <div class="stat-card">
+              <div class="valor">${jugador.puntos || 0}</div>
+              <div class="etiqueta">Puntos ranking</div>
+            </div>
+            ${rachaActual > 0 ? `
+              <div class="stat-card dorada">
+                <div class="valor">🔥 ${rachaActual}</div>
+                <div class="etiqueta">Racha actual</div>
+              </div>
+            ` : ""}
+            ${mejorRacha > 0 ? `
+              <div class="stat-card">
+                <div class="valor">${mejorRacha}</div>
+                <div class="etiqueta">Mejor racha</div>
+              </div>
+            ` : ""}
+          </div>
+
+          ${premiosHTML}
+          ${logrosHTML}
+          ${ultimosHTML}
+          ${partidosHTML}
+          ${historialHTML}
+        `;
+      } catch (e) {
+        console.error(e);
+        contenido.innerHTML = `
+          <a class="volver-link" href="index.html">← Volver al inicio</a>
+          <div class="perfil-privado">
+            <div class="candado">⚠️</div>
+            <h2>Error al cargar el perfil</h2>
+            <p>${e.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
+    // Se carga cuando se sabe quién está logueado (para mostrar "Cambiar foto" en tu propio perfil)
+    onAuthStateChanged(auth, async () => {
+      await cargarPerfil();
+      document.querySelectorAll("img[data-premio-rank]").forEach(async img => {
+        const [pid, pos] = img.dataset.premioRank.split("|");
+        try {
+          const src = srcSeguro((await get(ref(db, `imagenesPremiosRanking/${pid}/${pos}`))).val());
+          if (src) img.src = src; else img.remove();
+        } catch (e) { img.remove(); }
+      });
+    });
+
+    // ============================================
+    // FOTO DE PERFIL
+    // ============================================
+    window.subirFotoPerfil = async function(input) {
+      const archivo = input.files && input.files[0];
+      input.value = "";
+      if (!archivo || !auth.currentUser) return;
+      try {
+        window.toastInfo("Subiendo foto...");
+        const data = await redimensionarImagen(archivo, 320, 0.82, true);
+        const uid = auth.currentUser.uid;
+        await update(ref(db), {
+          [`fotosPerfil/${uid}`]: { data, fecha: new Date().toISOString() },
+          [`jugadores/${uid}/tieneFoto`]: true
+        });
+        limpiarCacheFoto(uid);
+        const mini = document.querySelector(".user-avatar-mini");
+        if (mini) mini.innerHTML = `<img src="${data}" alt="">`;
+        window.toastExito("¡Foto actualizada!");
+        cargarPerfil();
+      } catch (e) {
+        console.error(e);
+        window.toastError(e.message);
+      }
+    };
+
+    window.quitarMiFoto = async function() {
+      if (!auth.currentUser || !confirm("¿Quitar tu foto de perfil?")) return;
+      const uid = auth.currentUser.uid;
+      try {
+        await update(ref(db), { [`fotosPerfil/${uid}`]: null, [`jugadores/${uid}/tieneFoto`]: null });
+        limpiarCacheFoto(uid);
+        const mini = document.querySelector(".user-avatar-mini");
+        if (mini) mini.textContent = (document.querySelector(".perfil-info h1")?.textContent || "?").charAt(0).toUpperCase();
+        window.toastInfo("Foto quitada");
+        cargarPerfil();
+      } catch (e) {
+        window.toastError(e.message);
+      }
+    };
+  </script>
+</body>
+</html>

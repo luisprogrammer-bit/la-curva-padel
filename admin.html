@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script src="js/tema.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | La Curva Pádel Indoor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    /* ===== LAYOUT ADMIN ===== */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+      background: var(--fondo-sidebar);
+      padding: 25px 0;
+      border-right: 1px solid var(--borde);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .admin-sidebar::-webkit-scrollbar { width: 6px; }
+    .admin-sidebar::-webkit-scrollbar-thumb {
+      background: var(--fondo-3);
+      border-radius: 3px;
+    }
+
+    .admin-logo {
+      padding: 0 22px 25px;
+      border-bottom: 1px solid var(--borde);
+      margin-bottom: 15px;
+    }
+    .admin-logo a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .admin-logo-pelota {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--verde), var(--verde-oscuro));
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(180,227,61,0.3);
+    }
+    .admin-logo-pelota::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 2px dashed rgba(0,0,0,0.3);
+    }
+    .admin-logo-texto {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .admin-logo-texto .principal {
+      color: var(--blanco);
+      font-weight: 800;
+      font-size: 1.15em;
+      letter-spacing: 1px;
+    }
+    .admin-logo-texto .sub {
+      color: var(--acento);
+      font-weight: 700;
+      font-size: 0.65em;
+      letter-spacing: 3px;
+      margin-top: 3px;
+    }
+
+    .admin-nav {
+      flex: 1;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .admin-nav-titulo {
+      color: var(--acento);
+      font-size: 0.65em;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 15px 15px 8px;
+      opacity: 0.7;
+    }
+
+    .admin-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 15px;
+      color: var(--gris);
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 0.88em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transicion);
+      position: relative;
+    }
+    .admin-nav-item:hover {
+      background: rgba(180,227,61,0.06);
+      color: var(--blanco);
+    }
+    .admin-nav-item.activo {
+      background: rgba(180,227,61,0.12);
+      color: var(--acento);
+    }
+    .admin-nav-item.activo::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: var(--verde);
+      border-radius: 0 3px 3px 0;
+    }
+    .admin-nav-icono {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-nav-icono svg {
+      width: 100%;
+      height: 100%;
+      stroke-width: 2;
+    }
+
+    .admin-sidebar-footer {
+      padding: 20px 22px 15px;
+      margin-top: auto;
+      border-top: 1px solid var(--borde);
+    }
+    .admin-sidebar-frase {
+      color: var(--gris);
+      font-size: 0.78em;
+      font-style: italic;
+      line-height: 1.5;
+      position: relative;
+      padding-left: 12px;
+    }
+    .admin-sidebar-frase::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 5px;
+      bottom: 5px;
+      width: 2px;
+      background: var(--verde);
+      border-radius: 2px;
+    }
+
+    /* ===== MAIN ADMIN ===== */
+    .admin-main {
+      padding: 30px 40px 60px;
+      max-width: 1400px;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .admin-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .admin-top h1 {
+      font-size: 2em;
+      font-weight: 800;
+      color: var(--blanco);
+    }
+    .admin-top h1 span { color: var(--acento); }
+    .admin-top .admin-acciones {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .admin-top .admin-acciones a {
+      color: var(--gris);
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--borde);
+      transition: var(--transicion);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .admin-top .admin-acciones a:hover {
+      border-color: var(--verde);
+      color: var(--acento);
+    }
+
+    /* ===== PANELES ===== */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+      padding: 30px;
+      margin-top: 25px;
+    }
+    .panel h2 {
+      font-size: 1.2em;
+      margin-bottom: 22px;
+      color: var(--acento);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .panel h3 {
+      font-size: 1em;
+      margin: 25px 0 15px;
+      color: var(--acento);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .panel > p {
+      color: var(--gris);
+      font-size: 0.9em;
+      margin-bottom: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+    }
+
+    .lista-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: var(--fondo-3);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      color: var(--blanco);
+      gap: 15px;
+      flex-wrap: wrap;
+      transition: var(--transicion);
+    }
+    .lista-item:hover {
+      background: var(--card-hover);
+    }
+    .lista-item > div:first-child {
+      flex: 1;
+      min-width: 200px;
+    }
+    .lista-item strong {
+      color: var(--blanco);
+      font-size: 0.95em;
+    }
+    .info-torneo {
+      color: var(--gris);
+      font-size: 0.83em;
+      margin-top: 5px;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.7em;
+      letter-spacing: 1px;
+    }
+    .btn-danger {
+      background: #d32f2f;
+      color: white;
+      box-shadow: none;
+    }
+    .btn-danger:hover { background: #f44336; }
+    .btn-warning {
+      background: #ff9800;
+      color: white;
+      box-shadow: none;
+    }
+    .btn-warning:hover { background: #f57c00; }
+    .btn-info {
+      background: #42a5f5;
+      color: white;
+      box-shadow: none;
+    }
+    .btn-info:hover { background: #1e88e5; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.68em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .badge-borrador { background: var(--fondo-3); color: var(--gris); }
+    .badge-habilitado { background: rgba(180,227,61,0.2); color: var(--acento); }
+    .badge-finalizado { background: rgba(66,165,245,0.2); color: var(--celeste); }
+    .badge-suspendido { background: rgba(255,82,82,0.2); color: var(--rojo); }
+    .badge-activo { background: rgba(180,227,61,0.2); color: var(--acento); }
+    .badge-cancelado { background: rgba(255,82,82,0.2); color: var(--rojo); }
+
+    .torneos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 35px;
+      margin-bottom: 20px;
+    }
+    .torneos-header h2 {
+      margin: 0;
+      color: var(--acento);
+      font-size: 1.2em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    /* Ranking Más Jugados */
+    .jugados-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--fondo-3);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .jugados-tabla th {
+      background: var(--fondo);
+      padding: 14px 15px;
+      text-align: left;
+      font-size: 0.72em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--acento);
+      font-weight: 700;
+    }
+    .jugados-tabla td {
+      padding: 13px 15px;
+      border-top: 1px solid var(--borde);
+      font-size: 0.88em;
+      color: var(--gris);
+    }
+    .jugados-tabla .pos {
+      font-weight: 800;
+      color: var(--acento);
+      font-size: 1.05em;
+      width: 50px;
+    }
+    .jugados-tabla .pos.top1 { color: var(--oro); }
+    .jugados-tabla .pos.top2 { color: var(--plata); }
+    .jugados-tabla .pos.top3 { color: #cd7f32; }
+    .jugados-tabla .nombre {
+      color: var(--blanco);
+      font-weight: 700;
+    }
+    .jugados-tabla .cat {
+      font-size: 0.8em;
+      color: var(--gris);
+    }
+    .jugados-tabla .total {
+      color: var(--acento);
+      font-weight: 800;
+      font-size: 1.05em;
+    }
+    .jugados-tabla .desglose {
+      font-size: 0.72em;
+      color: var(--gris);
+    }
+
+    /* Premio card */
+    .premio-card-admin {
+      background: var(--fondo-3);
+      border: 1px solid var(--borde);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 12px;
+      border-left: 4px solid #ffc107;
+    }
+    .premio-card-admin .premio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .premio-card-admin .premio-titulo {
+      color: var(--blanco);
+      font-weight: 800;
+      font-size: 1em;
+    }
+    .premio-card-admin .premio-meta {
+      color: var(--gris);
+      font-size: 0.8em;
+      margin-top: 3px;
+    }
+    .premio-card-admin .premio-posiciones {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .premio-card-admin .premio-pos {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--fondo);
+      border-radius: 8px;
+      font-size: 0.88em;
+      flex-wrap: wrap;
+    }
+    .premio-card-admin .premio-pos .num {
+      font-weight: 800;
+      font-size: 1.1em;
+      min-width: 30px;
+    }
+    .premio-card-admin .premio-pos .num.p1 { color: var(--oro); }
+    .premio-card-admin .premio-pos .num.p2 { color: var(--plata); }
+    .premio-card-admin .premio-pos .num.p3 { color: #cd7f32; }
+    .premio-card-admin .premio-pos .nombre {
+      color: var(--blanco);
+      font-weight: 700;
+    }
+    .premio-card-admin .premio-pos .texto {
+      color: var(--acento);
+      font-size: 0.85em;
+      margin-left: auto;
+    }
+
+    /* ===== GESTIÓN DE PARTIDOS ===== */
+    .adm-subtitulo {
+      color: var(--acento);
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 25px 0 15px;
+    }
+    .adm-grupos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+    .adm-grupo {
+      background: var(--fondo-3);
+      border: 1px solid var(--borde);
+      border-top: 3px solid var(--verde);
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .adm-grupo h4 {
+      color: var(--acento);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 0.9em;
+      margin-bottom: 12px;
+    }
+    .adm-tabla-grupo {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8em;
+      margin-bottom: 14px;
+    }
+    .adm-tabla-grupo th {
+      color: var(--gris);
+      font-size: 0.8em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 4px;
+      border-bottom: 1px solid var(--borde);
+      text-align: center;
+    }
+    .adm-tabla-grupo th:first-child, .adm-tabla-grupo td:first-child { text-align: left; }
+    .adm-tabla-grupo td {
+      padding: 7px 4px;
+      border-bottom: 1px solid var(--borde);
+      color: var(--gris);
+      text-align: center;
+    }
+    .adm-tabla-grupo tr.clasifica td { color: var(--acento); }
+    .adm-bracket {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      align-items: flex-start;
+    }
+    .adm-ronda {
+      min-width: 240px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .adm-ronda-titulo {
+      color: var(--acento);
+      font-size: 0.72em;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--borde);
+    }
+    .adm-partido {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-left: 4px solid var(--gris-oscuro);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .adm-partido.cerrado { border-left-color: var(--verde); }
+    .adm-partido.por-jugar { border-left-color: #42a5f5; }
+    .adm-partido.esperando { opacity: 0.55; }
+    .adm-pareja {
+      font-size: 0.84em;
+      color: var(--gris);
+      padding: 3px 0;
+    }
+    .adm-pareja.ganadora { color: var(--acento); font-weight: 700; }
+    .adm-pareja.ganadora::after { content: " ✓"; }
+    .adm-marcador {
+      font-size: 0.78em;
+      font-weight: 800;
+      color: var(--acento);
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    .adm-partido-acciones {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .adm-partido-estado {
+      font-size: 0.7em;
+      color: var(--gris);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 6px;
+    }
+    .adm-aviso-final {
+      margin-top: 20px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      background: rgba(255,193,7,0.12);
+      border: 1px solid rgba(255,193,7,0.4);
+      color: var(--blanco);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    /* ===== MODAL CARGAR RESULTADO ===== */
+    .partido-preview {
+      background: var(--fondo-3);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .partido-preview .preview-fase {
+      color: var(--celeste);
+      font-size: 0.7em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .partido-preview .preview-parejas {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--blanco);
+      font-weight: 700;
+      font-size: 0.9em;
+    }
+    .partido-preview .preview-parejas > div { flex: 1; }
+    .partido-preview .preview-parejas > div:last-child { text-align: right; }
+    .partido-preview .preview-etq {
+      display: block;
+      color: var(--gris);
+      font-size: 0.7em;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .partido-preview .preview-vs {
+      flex: 0 0 auto !important;
+      color: var(--celeste);
+      font-weight: 800;
+    }
+    .set-row {
+      display: grid;
+      grid-template-columns: 70px 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .set-row .set-label {
+      color: var(--acento);
+      font-weight: 800;
+      font-size: 0.75em;
+      letter-spacing: 1px;
+    }
+    .set-row input {
+      width: 100%;
+      padding: 12px;
+      background: var(--fondo);
+      border: 1px solid var(--gris-oscuro);
+      border-radius: 10px;
+      color: var(--blanco);
+      font-family: inherit;
+      font-size: 1em;
+      text-align: center;
+    }
+    .set-row input:focus { outline: none; border-color: var(--verde); }
+
+    /* ===== GESTOR DE CANCHAS ===== */
+    .canchas-resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .cancha-resumen-item {
+      background: var(--fondo-3);
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--gris);
+      font-size: 0.75em;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .cancha-resumen-item .num {
+      display: block;
+      font-size: 2.2em;
+      color: var(--blanco);
+      letter-spacing: 0;
+      margin-bottom: 2px;
+    }
+    .cancha-resumen-item .num.libre { color: var(--acento); }
+    .cancha-resumen-item .num.ocupada { color: var(--naranja); }
+    .cancha-resumen-item .num.espera { color: var(--celeste); }
+    .canchas-tablero {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 15px;
+    }
+    .cancha-card {
+      background: var(--fondo-3);
+      border: 2px solid var(--gris-oscuro);
+      border-radius: 14px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .cancha-card.libre { border-color: var(--verde); }
+    .cancha-card.ocupada { border-color: #ff9800; background: rgba(255,152,0,0.06); }
+    .cancha-card.fuera { opacity: 0.55; }
+    .cancha-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .cancha-card-header h4 { color: var(--blanco); font-size: 1em; }
+    .cancha-estado {
+      font-size: 0.65em;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--fondo-3);
+      color: var(--gris);
+    }
+    .cancha-card.libre .cancha-estado { background: rgba(180,227,61,0.18); color: var(--acento); }
+    .cancha-card.ocupada .cancha-estado { background: rgba(255,152,0,0.2); color: var(--naranja); }
+    .cancha-card .mini-cancha {
+      aspect-ratio: 2 / 1;
+      border: 2px solid var(--gris-oscuro);
+      border-radius: 6px;
+      position: relative;
+      margin-bottom: 12px;
+      background: var(--fondo-3);
+    }
+    .cancha-card.libre .mini-cancha { border-color: var(--verde); background: rgba(180,227,61,0.1); }
+    .cancha-card.ocupada .mini-cancha { border-color: #ff9800; background: rgba(255,152,0,0.12); }
+    .cancha-card .mini-cancha::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 2px;
+      background: currentColor;
+      opacity: 0.6;
+      transform: translateX(-50%);
+      color: var(--gris-oscuro);
+    }
+    .cancha-card.libre .mini-cancha::after { color: var(--acento); }
+    .cancha-card.ocupada .mini-cancha::after { color: var(--naranja); }
+    .cancha-detalle-vacio { color: var(--gris); font-size: 0.82em; flex: 1; }
+    .cancha-partido { flex: 1; }
+    .cancha-torneo {
+      color: var(--naranja);
+      font-size: 0.7em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cancha-pareja { color: var(--blanco); font-weight: 700; font-size: 0.86em; }
+    .cancha-vs { color: var(--gris); font-size: 0.72em; margin: 2px 0; }
+    .cancha-desde { color: var(--gris); font-size: 0.72em; margin-top: 6px; }
+    .cancha-acciones { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .cancha-config {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--borde);
+    }
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--gris);
+      font-family: inherit;
+      font-size: 0.75em;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    }
+    .btn-link:hover { color: var(--blanco); }
+    .btn-link.peligro:hover { color: var(--rojo); }
+    .adm-cancha, .adm-cancha-texto {
+      font-size: 0.75em;
+      color: var(--naranja);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .adm-select-cancha {
+      padding: 6px 10px;
+      background: var(--fondo);
+      border: 1px solid var(--gris-oscuro);
+      border-radius: 8px;
+      color: var(--blanco);
+      font-family: inherit;
+      font-size: 0.95em;
+      max-width: 100%;
+    }
+    .lista-item .adm-select-cancha { font-size: 0.85em; }
+
+    .premio-img-preview {
+      width: 120px;
+      height: 90px;
+      border-radius: 12px;
+      border: 1px dashed var(--gris-oscuro);
+      background: var(--fondo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: var(--gris);
+      font-size: 0.75em;
+      flex-shrink: 0;
+    }
+    .premio-img-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+    .premio-rank-img { display: flex; align-items: center; gap: 10px; }
+    .premio-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--borde); }
+
+    /* ===== LLAVES MANUALES ===== */
+    #gestionPartidosContenido .btn-sm { width: auto; }
+    .llaves-toolbar .btn { width: auto; }
+    .llaves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 12px;
+    }
+    .llave-partido {
+      background: var(--fondo-3);
+      border: 1px solid var(--borde);
+      border-left: 4px solid #42a5f5;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .llave-num {
+      color: var(--celeste);
+      font-size: 0.7em;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .llave-vs { color: var(--gris); font-size: 0.72em; text-align: center; }
+    .llave-partido select {
+      width: 100%;
+      padding: 9px 10px;
+      background: var(--fondo);
+      border: 1px solid var(--gris-oscuro);
+      border-radius: 8px;
+      color: var(--blanco);
+      font-family: inherit;
+      font-size: 0.85em;
+    }
+    .llave-partido select.dup { border-color: #ff5252; box-shadow: 0 0 0 2px rgba(255,82,82,0.2); }
+    .adm-aviso-llaves {
+      margin-top: 25px;
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: rgba(66,165,245,0.1);
+      border: 1px solid rgba(66,165,245,0.35);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .adm-aviso-llaves strong { color: var(--celeste); letter-spacing: 1px; text-transform: uppercase; font-size: 0.85em; }
+    .adm-aviso-llaves p { color: var(--gris); font-size: 0.88em; margin-top: 4px; }
+
+    /* ===== INSCRIPCIÓN MANUAL ===== */
+    .insc-manual-bloque {
+      background: var(--fondo-3);
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .insc-manual-titulo {
+      color: var(--acento);
+      font-size: 0.75em;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .insc-manual-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gris);
+      font-size: 0.85em;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .insc-manual-check input { accent-color: var(--verde); width: 16px; height: 16px; }
+    .insc-manual-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--fondo);
+      border: 1px solid var(--gris-oscuro);
+      border-radius: 10px;
+      color: var(--blanco);
+      font-family: inherit;
+      font-size: 0.9em;
+      margin-bottom: 8px;
+    }
+    .insc-manual-input:focus { outline: none; border-color: var(--verde); }
+    select.insc-manual-input option { padding: 6px 4px; }
+    select.insc-manual-input option:checked { background: var(--verde) linear-gradient(var(--verde), var(--verde)); color: #0a0a0a; font-weight: 700; }
+    .insc-manual-datos { grid-template-columns: 2fr 1fr; gap: 8px; }
+
+    /* ===== LISTA DE TORNEOS (EMPLEADOS) ===== */
+    .torneo-admin-card {
+      background: var(--fondo-3);
+      border: 1px solid var(--borde);
+      border-left: 4px solid var(--gris-oscuro);
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+    }
+    .torneo-admin-card.habilitado { border-left-color: var(--verde); }
+    .torneo-admin-card.finalizado { border-left-color: #ffc107; }
+    .torneo-admin-card.suspendido { border-left-color: #ff5252; opacity: 0.8; }
+    .panel .tac-cabecera h3 { color: var(--blanco); font-size: 1.2em; font-weight: 800; margin: 0 0 4px; text-transform: none; letter-spacing: 0; }
+    .tac-pasos { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 10px; }
+    .tac-paso {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.72em; font-weight: 700; letter-spacing: 0.5px;
+      color: #777;
+      padding: 5px 12px 5px 5px;
+      border-radius: 50px;
+      background: var(--fondo-3);
+    }
+    .tac-paso span {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--fondo-3); color: #999; font-size: 0.9em;
+    }
+    .tac-paso.hecho { color: var(--gris); }
+    .tac-paso.hecho span { background: rgba(180,227,61,0.2); color: var(--acento); }
+    .tac-paso.actual { color: var(--blanco); background: rgba(180,227,61,0.12); }
+    .tac-paso.actual span { background: var(--verde); color: #0a0a0a; }
+    .tac-ayuda { color: var(--gris); font-size: 0.88em; line-height: 1.55; margin-bottom: 14px; }
+    .tac-ayuda strong { color: var(--blanco); }
+    .tac-acciones { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .tac-acciones > .btn:first-child { font-size: 0.78em; padding: 11px 20px; }
+    .tac-mas { position: relative; }
+    .tac-mas summary {
+      list-style: none; cursor: pointer;
+      color: var(--gris); font-size: 0.78em; font-weight: 700;
+      padding: 9px 14px; border-radius: 50px; border: 1px solid var(--borde);
+    }
+    .tac-mas summary::-webkit-details-marker { display: none; }
+    .tac-mas summary:hover, .tac-mas[open] summary { color: var(--blanco); border-color: var(--gris-oscuro); }
+    .tac-menu {
+      position: absolute; z-index: 20; top: calc(100% + 6px); left: 0;
+      min-width: 260px;
+      background: var(--card); border: 1px solid var(--borde); border-radius: 12px;
+      padding: 6px; box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column;
+    }
+    .tac-menu-item {
+      background: none; border: none; text-align: left; text-decoration: none;
+      color: var(--blanco); font-family: inherit; font-size: 0.85em;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    }
+    .tac-menu-item:hover { background: var(--fondo-3); }
+    .tac-menu-item.peligro { color: var(--rojo); }
+
+    /* ===== DISPONIBILIDAD / HORARIOS ===== */
+    .dispo-tabla { display: flex; flex-direction: column; gap: 5px; }
+    .dispo-fila { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .dispo-dia { width: 34px; color: var(--gris); font-size: 0.72em; font-weight: 700; text-transform: uppercase; }
+    .dispo-chip {
+      font-size: 0.68em; padding: 3px 7px; border-radius: 6px;
+      background: var(--fondo-3); color: var(--gris-oscuro);
+      border: 1px solid transparent; font-family: inherit;
+    }
+    .dispo-chip.si { background: rgba(180,227,61,0.18); color: var(--acento); }
+    .dispo-chip.ambos { border-color: var(--verde); font-weight: 800; }
+    .dispo-chip.boton { cursor: pointer; font-size: 0.75em; padding: 6px 9px; }
+    .dispo-sin { color: var(--gris); font-size: 0.8em; font-style: italic; }
+    .dispo-leyenda-mini { color: var(--gris); font-size: 0.72em; margin-top: 10px; }
+    .horario-parejas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 8px; }
+    .horario-pareja strong { display: block; color: var(--blanco); font-size: 0.88em; margin-bottom: 8px; }
+    .horario-dias { display: flex; gap: 8px; flex-wrap: wrap; }
+    .horario-dia-btn {
+      padding: 10px 16px; border-radius: 10px; border: 1px solid var(--borde);
+      background: var(--fondo); color: var(--blanco); font-family: inherit; font-weight: 700; font-size: 0.85em; cursor: pointer;
+    }
+    .horario-dia-btn.activo { border-color: var(--verde); background: rgba(180,227,61,0.12); color: var(--acento); }
+    .aviso-horario { font-size: 0.84em; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; }
+    .aviso-horario.mal { background: rgba(255,152,0,0.12); color: var(--naranja); }
+    .aviso-horario.bien { background: rgba(180,227,61,0.1); color: var(--acento); }
+    .horario-botones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+    .horario-botones .btn { width: auto; flex: 1; min-width: 160px; }
+    .adm-horario-btn {
+      display: block; width: 100%; text-align: left;
+      background: rgba(66,165,245,0.08); border: 1px dashed rgba(66,165,245,0.5);
+      color: var(--celeste); font-family: inherit; font-size: 0.75em; font-weight: 700;
+      padding: 6px 10px; border-radius: 8px; cursor: pointer; margin-bottom: 6px;
+    }
+    .adm-horario-btn.con { border-style: solid; background: rgba(66,165,245,0.14); }
+    @media (max-width: 600px) { .horario-parejas { grid-template-columns: 1fr; } }
+
+    /* ===== AVISOS ===== */
+    .aviso-item {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 14px; background: var(--fondo-3); border-radius: 10px; margin-bottom: 8px;
+      border-left: 3px solid #25d366;
+    }
+    .aviso-item.enviado { border-left-color: var(--gris-oscuro); opacity: 0.75; }
+    .aviso-item strong { color: var(--blanco); font-size: 0.9em; }
+    .aviso-item .btn { width: auto; margin: 0; }
+
+    /* Modal grande */
+    .modal-gran .modal-contenido {
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* Hamburger admin (mobile) */
+    .admin-hamburguesa {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--borde);
+      color: var(--blanco);
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3em;
+      transition: var(--transicion);
+    }
+    .admin-hamburguesa:hover {
+      border-color: var(--verde);
+      color: var(--acento);
+    }
+
+    .admin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 99;
+    }
+    .admin-overlay.activo { display: block; }
+
+    @media (max-width: 900px) {
+      .admin-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .panel { padding: 22px 16px; border-radius: 16px; }
+      .admin-top { margin-bottom: 15px; }
+      .tac-acciones > .btn:first-child { width: 100%; justify-content: center; text-align: center; }
+      .tac-menu { left: auto; right: 0; min-width: 240px; }
+      .lista-item > div:first-child { min-width: 0; }
+      .llaves-grid { grid-template-columns: 1fr; }
+      .adm-grupos { grid-template-columns: 1fr; }
+      .horario-parejas { grid-template-columns: 1fr; }
+      .modal-contenido { padding: 26px 16px; }
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 250px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 200;
+      }
+      .admin-sidebar.abierto {
+        transform: translateX(0);
+        box-shadow: 10px 0 40px rgba(0,0,0,0.7);
+      }
+      .admin-hamburguesa {
+        display: flex;
+      }
+      .admin-main {
+        padding: 20px 20px 50px;
+      }
+      .admin-top h1 { font-size: 1.5em; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+
+    <!-- SIDEBAR ADMIN -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-logo">
+        <a href="index.html">
+          <div class="admin-logo-texto" style="gap:8px;">
+            <img src="img/logo-original.png" alt="La Curva Pádel Indoor" class="logo-claro" style="width:180px; max-width:100%; height:auto; display:block;">
+            <img src="img/logo.png" alt="La Curva Pádel Indoor" class="logo-oscuro" style="width:180px; max-width:100%; height:auto;">
+            <span class="sub">PANEL ADMIN</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="admin-nav">
+        <div class="admin-nav-titulo">Torneos</div>
+        <a class="admin-nav-item activo" onclick="mostrarSeccion('torneos', event)">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></span>
+          <span>Torneos</span>
+        </a>
+        <a class="admin-nav-item" onclick="mostrarSeccion('canchas', event)">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span>
+          <span>Canchas</span>
+        </a>
+        <a class="admin-nav-item" onclick="mostrarSeccion('inscripciones', event)">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span>
+          <span>Inscripciones</span>
+        </a>
+        <a class="admin-nav-item" onclick="mostrarSeccion('historial', event)">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+          <span>Historial</span>
+        </a>
+
+        <div class="admin-nav-titulo">Rankings</div>
+        <a class="admin-nav-item" onclick="mostrarSeccion('masJugados', event)">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span>Más jugados</span>
+        </a>
+        <a class="admin-nav-item" onclick="mostrarSeccion('premios', event)">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></span>
+          <span>Premios</span>
+        </a>
+
+        <div class="admin-nav-titulo">Sistema</div>
+        <a class="admin-nav-item" onclick="cerrarSesion()">
+          <span class="admin-nav-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+          <span>Cerrar sesión</span>
+        </a>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <div class="admin-sidebar-frase">Panel de administración</div>
+      </div>
+    </aside>
+
+    <div class="admin-overlay" id="adminOverlay" onclick="cerrarAdminSidebar()"></div>
+
+    <!-- MAIN ADMIN -->
+    <main class="admin-main">
+
+      <div class="admin-top">
+        <div style="display:flex; align-items:center; gap:15px;">
+          <button class="admin-hamburguesa" onclick="abrirAdminSidebar()">☰</button>
+          <h1>Panel <span>Administrador</span></h1>
+        </div>
+        <div class="admin-acciones">
+          <script>document.write(window.BOTON_TEMA_HTML || "");</script>
+          <a href="index.html" title="Ver sitio público">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Ver sitio
+          </a>
+        </div>
+      </div>
+
+      <!-- TORNEOS -->
+      <div class="panel seccion-admin" id="sec-torneos">
+        <h2 id="tituloFormTorneo">Crear nuevo torneo</h2>
+        <div class="grid-2">
+          <div class="campo">
+            <label>Nombre del torneo</label>
+            <input id="torneoNombre" placeholder="Ej: Copa Otoño 2026">
+          </div>
+          <div class="campo">
+            <label>Fecha</label>
+            <input id="torneoFecha" type="date">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Género</label>
+            <select id="torneoGenero" onchange="alCambiarGenero()">
+              <option value="masculino">Caballeros (masculino)</option>
+              <option value="femenino">Damas (femenino)</option>
+              <option value="mixto">Mixto</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Tipo de torneo</label>
+            <select id="torneoTipo" onchange="toggleSumaMinima()">
+              <option value="categoria">Por categoría</option>
+              <option value="suma">Por suma</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo" id="campoCategoria">
+            <label>Categoría</label>
+            <select id="torneoCategoria"></select>
+          </div>
+          <div class="campo" id="campoSumaMinima" style="display:none;">
+            <label>Suma mínima</label>
+            <select id="torneoSumaMinima">
+              <option value="4">Suma 4</option>
+              <option value="5">Suma 5</option>
+              <option value="6">Suma 6</option>
+              <option value="7">Suma 7</option>
+              <option value="8">Suma 8</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Mínimo de parejas para jugar</label>
+            <input id="torneoMinParejas" type="number" value="8" min="2">
+          </div>
+          <div class="campo">
+            <label>Descripción (opcional)</label>
+            <input id="torneoDescripcion" placeholder="Ej: Torneo nocturno, inscripción $XXXX">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Premio 1° lugar</label>
+            <input id="torneoPremio1" placeholder="Ej: Trofeo + $20.000">
+          </div>
+          <div class="campo">
+            <label>Premio 2° lugar</label>
+            <input id="torneoPremio2" placeholder="Ej: Trofeo + $10.000">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Imagen del premio 1° (opcional)</label>
+            <div class="foto-perfil-editor">
+              <div class="premio-img-preview" id="previewPremio1"><span>Sin imagen</span></div>
+              <div class="foto-perfil-acciones">
+                <label class="foto-perfil-boton">📷 Elegir imagen
+                  <input type="file" accept="image/*" hidden onchange="elegirImagenPremio(1, this)">
+                </label>
+                <button type="button" class="foto-perfil-quitar" id="quitarPremio1" style="display:none;" onclick="quitarImagenPremio(1)">Quitar imagen</button>
+              </div>
+            </div>
+          </div>
+          <div class="campo">
+            <label>Imagen del premio 2° (opcional)</label>
+            <div class="foto-perfil-editor">
+              <div class="premio-img-preview" id="previewPremio2"><span>Sin imagen</span></div>
+              <div class="foto-perfil-acciones">
+                <label class="foto-perfil-boton">📷 Elegir imagen
+                  <input type="file" accept="image/*" hidden onchange="elegirImagenPremio(2, this)">
+                </label>
+                <button type="button" class="foto-perfil-quitar" id="quitarPremio2" style="display:none;" onclick="quitarImagenPremio(2)">Quitar imagen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="btnCrearTorneo" onclick="crearTorneo()">Crear torneo (borrador)</button>
+          <button class="btn btn-outline" id="btnCancelarEdicion" onclick="cancelarEdicionTorneo()" style="display:none;">Cancelar edición</button>
+        </div>
+
+        <div class="torneos-header">
+          <h2>Torneos existentes</h2>
+          <button class="btn btn-outline btn-sm" onclick="recalcularRankingsManual()" title="Recalcula los puntos de ranking y las estadísticas de los perfiles">
+            🔄 Recalcular ranking y perfiles
+          </button>
+        </div>
+        <div id="listaTorneosAdmin"></div>
+      </div>
+
+      <!-- CANCHAS -->
+      <div class="panel seccion-admin" id="sec-canchas" style="display:none">
+        <h2>Gestor de canchas</h2>
+        <p>El club tiene 8 canchas. Cada partido recibe una cancha libre 20 minutos antes de su horario (o enseguida si no tiene horario). Al cargar el resultado, la cancha se libera y pasa sola al siguiente partido. Los jugadores reciben un aviso con la cancha donde les toca jugar.</p>
+        <button class="btn btn-sm btn-outline" onclick="asignarCanchasAhora()" style="width:auto; margin-bottom:10px;">🔄 Revisar canchas ahora</button>
+
+        <div class="canchas-resumen" id="resumenCanchas"></div>
+
+        <h3>Estado de las canchas</h3>
+        <div class="canchas-tablero" id="tableroCanchas">
+          <p style="color:var(--gris); padding:20px 0;">Cargando...</p>
+        </div>
+
+        <h3>Partidos esperando cancha</h3>
+        <div id="listaEsperaCanchas"></div>
+
+      </div>
+
+      <!-- INSCRIPCIONES -->
+      <div class="panel seccion-admin" id="sec-inscripciones" style="display:none">
+        <h2>Inscripciones recibidas</h2>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:20px;">
+          <label style="color:var(--gris); font-size:0.82em; letter-spacing:1px; text-transform:uppercase; font-weight:700;">Filtrar por torneo:</label>
+          <select id="filtroTorneoInsc" onchange="filtrarInscripcionesPorTorneo()" style="padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+            <option value="">Todos los torneos</option>
+          </select>
+          <button class="btn btn-sm btn-outline" onclick="seleccionarTodasInscripciones()">Seleccionar todas</button>
+          <button class="btn btn-sm btn-outline" onclick="deseleccionarTodasInscripciones()">Deseleccionar</button>
+        </div>
+
+        <div class="lista-item" style="background:var(--fondo-3); padding:15px 20px; margin-bottom:15px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap; width:100%;">
+            <div style="color:var(--gris);"><strong id="contadorInscSeleccionadas" style="color: var(--acento);">0</strong> inscripciones seleccionadas</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-danger" onclick="borrarInscripcionesSeleccionadas()">Borrar seleccionadas</button>
+              <button class="btn btn-sm btn-danger" onclick="borrarTodasInscripciones()">Borrar todas las visibles</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="listaInscripciones"></div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div class="panel seccion-admin" id="sec-historial" style="display:none">
+        <h2>Historial de torneos</h2>
+        <p>Acá ves todos los torneos finalizados. Podés borrarlos del historial.</p>
+
+        <div class="lista-item" style="background:var(--fondo-3); padding:15px 20px; margin-bottom:15px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap; width:100%;">
+            <div style="color:var(--gris);"><strong id="contadorHistSeleccionados" style="color: var(--acento);">0</strong> torneos seleccionados</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-outline" onclick="seleccionarTodosHistorial()">Seleccionar todos</button>
+              <button class="btn btn-sm btn-outline" onclick="deseleccionarTodoHistorial()">Deseleccionar</button>
+              <button class="btn btn-sm btn-danger" onclick="borrarHistorialSeleccionado()">Borrar seleccionados</button>
+              <button class="btn btn-sm btn-danger" onclick="borrarTodoElHistorial()">Borrar todo</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="listaHistorial"></div>
+      </div>
+
+      <!-- MÁS JUGADOS -->
+      <div class="panel seccion-admin" id="sec-masJugados" style="display:none">
+        <h2>Ranking: más jugados</h2>
+        <p>Partidos de torneo jugados por cada jugador. Se actualiza automáticamente al abrir esta sección.</p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:25px;">
+          <button class="btn btn-sm" data-periodo="semana" onclick="cambiarPeriodoJugados('semana')" id="btnPeriodoSemana">Semana</button>
+          <button class="btn btn-sm btn-outline" data-periodo="mes" onclick="cambiarPeriodoJugados('mes')" id="btnPeriodoMes">Mes</button>
+          <button class="btn btn-sm btn-outline" data-periodo="anio" onclick="cambiarPeriodoJugados('anio')" id="btnPeriodoAnio">Año</button>
+        </div>
+
+        <div class="lista-item" style="background:var(--fondo-3); padding:15px 20px; margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap; width:100%;">
+            <div style="color:var(--gris); font-size:0.85em;" id="jugadosInfo">Cargando...</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-outline" onclick="recalcularJugadosManual()">🔄 Recalcular</button>
+              <button class="btn btn-sm" id="btnPublicarJugados" onclick="publicarJugados()">📢 Publicar Top 10</button>
+              <button class="btn btn-sm btn-danger" id="btnDespublicarJugados" onclick="despublicarJugados()" style="display:none;">✖ Despublicar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="jugadosContenido">
+          <p style="color:var(--gris); text-align:center; padding:30px;">Cargando ranking...</p>
+        </div>
+      </div>
+
+      <!-- PREMIOS -->
+      <div class="panel seccion-admin" id="sec-premios" style="display:none">
+        <h2>Otorgar premio</h2>
+        <p>Elegí el ranking, el período y los ganadores. Se les va a enviar una notificación.</p>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Tipo de ranking</label>
+            <select id="premioTipo" onchange="alCambiarTipoPremio()">
+              <option value="jugados">Más jugados</option>
+              <option value="puntos">Ranking por puntos</option>
+            </select>
+          </div>
+          <div class="campo" id="campoPeriodoPremio">
+            <label>Período</label>
+            <select id="premioPeriodo" onchange="cargarJugadoresParaPremios()">
+              <option value="semana">Semana actual</option>
+              <option value="mes">Mes actual</option>
+              <option value="anio">Año actual</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" id="campoCategoriaPremio" style="display:none;">
+          <div class="campo">
+            <label>Categoría</label>
+            <select id="premioCategoria" onchange="cargarJugadoresParaPremios()">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Género</label>
+            <select id="premioGenero" onchange="alCambiarGeneroPremio()">
+              <option value="masculino">Masculino</option>
+              <option value="femenino">Femenino</option>
+              <option value="mixto">Mixto</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Ganadores</h3>
+
+        <div class="lista-item" style="background:var(--fondo-3); flex-direction:column; align-items:stretch; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="font-weight:800; color: var(--oro); font-size:1.2em; min-width:40px;">1°</div>
+            <select id="premio1Jugador" style="flex:1; min-width:200px; padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+              <option value="">Seleccionar jugador...</option>
+            </select>
+            <input id="premio1Texto" placeholder="Premio (ej: 1 hora gratis)" style="flex:1; min-width:200px; padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+            <div class="premio-rank-img">
+              <div class="premio-img-preview" id="previewPremioRank1" style="width:64px; height:64px;"><span>Foto</span></div>
+              <label class="foto-perfil-boton" style="font-size:0.72em; padding:7px 12px;">📷 Imagen
+                <input type="file" accept="image/*" hidden onchange="elegirImagenPremioRank(1, this)">
+              </label>
+              <button type="button" class="foto-perfil-quitar" id="quitarPremioRank1" style="display:none;" onclick="quitarImagenPremioRank(1)">Quitar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lista-item" style="background:var(--fondo-3); flex-direction:column; align-items:stretch; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="font-weight:800; color: var(--plata); font-size:1.2em; min-width:40px;">2°</div>
+            <select id="premio2Jugador" style="flex:1; min-width:200px; padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+              <option value="">Seleccionar jugador...</option>
+            </select>
+            <input id="premio2Texto" placeholder="Premio (ej: 50% descuento)" style="flex:1; min-width:200px; padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+            <div class="premio-rank-img">
+              <div class="premio-img-preview" id="previewPremioRank2" style="width:64px; height:64px;"><span>Foto</span></div>
+              <label class="foto-perfil-boton" style="font-size:0.72em; padding:7px 12px;">📷 Imagen
+                <input type="file" accept="image/*" hidden onchange="elegirImagenPremioRank(2, this)">
+              </label>
+              <button type="button" class="foto-perfil-quitar" id="quitarPremioRank2" style="display:none;" onclick="quitarImagenPremioRank(2)">Quitar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lista-item" style="background:var(--fondo-3); flex-direction:column; align-items:stretch; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="font-weight:800; color:#cd7f32; font-size:1.2em; min-width:40px;">3°</div>
+            <select id="premio3Jugador" style="flex:1; min-width:200px; padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+              <option value="">Seleccionar jugador...</option>
+            </select>
+            <input id="premio3Texto" placeholder="Premio (ej: 25% descuento)" style="flex:1; min-width:200px; padding:10px 14px; background:var(--fondo); border:1px solid var(--gris-oscuro); border-radius:10px; color:var(--blanco); font-family:inherit;">
+            <div class="premio-rank-img">
+              <div class="premio-img-preview" id="previewPremioRank3" style="width:64px; height:64px;"><span>Foto</span></div>
+              <label class="foto-perfil-boton" style="font-size:0.72em; padding:7px 12px;">📷 Imagen
+                <input type="file" accept="image/*" hidden onchange="elegirImagenPremioRank(3, this)">
+              </label>
+              <button type="button" class="foto-perfil-quitar" id="quitarPremioRank3" style="display:none;" onclick="quitarImagenPremioRank(3)">Quitar</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" onclick="otorgarPremio()" style="margin-top:20px;">🏆 Otorgar premio</button>
+        <p class="error-msg" id="errorPremio"></p>
+
+        <h3 style="margin-top:40px;">Premios otorgados</h3>
+        <div id="listaPremiosAdmin"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL FINALIZAR TORNEO -->
+  <div class="modal" id="modalFinalizar">
+    <div class="modal-contenido" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalFinalizar')">×</button>
+      <h2>Finalizar <span>torneo</span></h2>
+      <p id="finalizarNombreTorneo" style="color:var(--gris); margin-bottom:20px;"></p>
+
+      <div class="campo">
+        <label>Pareja campeona</label>
+        <select id="finalizarCampeon"></select>
+      </div>
+
+      <div class="campo">
+        <label>Pareja subcampeona</label>
+        <select id="finalizarSubcampeon"></select>
+      </div>
+
+      <p style="color:var(--gris); font-size:0.85em; margin-bottom:20px;">
+        Al finalizar, el torneo se marca como <strong style="color: var(--acento)">finalizado</strong> y aparece en el palmarés.
+      </p>
+
+      <button class="btn" onclick="confirmarFinalizarTorneo()">Finalizar torneo</button>
+      <p class="error-msg" id="errorFinalizar"></p>
+    </div>
+  </div>
+
+  <!-- MODAL SIMULACIÓN -->
+  <div class="modal" id="modalSimular">
+    <div class="modal-contenido" style="max-width: 500px;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalSimular')">×</button>
+      <h2>Simular <span>torneo</span></h2>
+      <p id="simularNombreTorneo" style="color:var(--gris); margin-bottom:20px;"></p>
+
+      <div class="campo">
+        <label>Cantidad de parejas a simular</label>
+        <select id="simularCantidad">
+          <option value="4">4 parejas (semifinales)</option>
+          <option value="6">6 parejas (con BYE)</option>
+          <option value="8" selected>8 parejas (cuartos)</option>
+          <option value="12">12 parejas (con BYE)</option>
+          <option value="16">16 parejas (octavos)</option>
+          <option value="20">20 parejas (grupos + eliminación)</option>
+          <option value="24">24 parejas (grupos + eliminación)</option>
+          <option value="32">32 parejas (grupos + eliminación)</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Resultados</label>
+        <select id="simularCompletar">
+          <option value="no">Dejar los partidos pendientes (para probar la carga)</option>
+          <option value="si">Completar todos los resultados al azar</option>
+        </select>
+      </div>
+
+      <p style="color:var(--gris); font-size:0.85em; margin-bottom:20px;">
+        Usa parejas ficticias y no suma puntos al ranking. Hasta 16 parejas: eliminación directa. Más de 16: fase de grupos + eliminación.
+        Solo se puede simular en un torneo sin parejas inscriptas.
+      </p>
+
+      <button class="btn" onclick="ejecutarSimulacion()">Simular torneo</button>
+      <p class="error-msg" id="errorSimular"></p>
+    </div>
+  </div>
+
+  <!-- MODAL BRACKET ADMIN -->
+  <div class="modal" id="modalBracketAdmin">
+    <div class="modal-contenido" style="max-width: 1400px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalBracketAdmin')">×</button>
+      <h2 id="bracketAdminTitulo">Bracket</h2>
+      <div id="bracketAdminContenido" style="margin-top:20px;">
+        <p style="color:var(--gris); text-align:center; padding:40px;">Cargando...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GESTIÓN DE PARTIDOS -->
+  <div class="modal" id="modalGestionPartidos">
+    <div class="modal-contenido" style="max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalGestionPartidos')">×</button>
+      <h2 id="gestionPartidosTitulo">Gestionar partidos</h2>
+      <div id="gestionPartidosContenido" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CARGAR RESULTADO -->
+  <div class="modal" id="modalCargarResultado">
+    <div class="modal-contenido" style="max-width: 550px;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalCargarResultado')">×</button>
+      <h2>Cargar <span>resultado</span></h2>
+
+      <div class="partido-preview" id="previewPartido"></div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-size:0.75em; letter-spacing:1.5px; text-transform:uppercase; color:var(--gris); margin-bottom:10px; font-weight:600;">Set 1</label>
+        <div class="set-row">
+          <div class="set-label">SET 1</div>
+          <input type="number" id="set1Local" placeholder="Local" min="0" max="7">
+          <input type="number" id="set1Visit" placeholder="Visit" min="0" max="7">
+        </div>
+
+        <label style="display:block; font-size:0.75em; letter-spacing:1.5px; text-transform:uppercase; color:var(--gris); margin:20px 0 10px; font-weight:600;">Set 2</label>
+        <div class="set-row">
+          <div class="set-label">SET 2</div>
+          <input type="number" id="set2Local" placeholder="Local" min="0" max="7">
+          <input type="number" id="set2Visit" placeholder="Visit" min="0" max="7">
+        </div>
+
+        <label style="display:block; font-size:0.75em; letter-spacing:1.5px; text-transform:uppercase; color:var(--gris); margin:20px 0 10px; font-weight:600;">Set 3 / super tie-break (solo si quedaron 1 a 1)</label>
+        <div class="set-row">
+          <div class="set-label">SET 3</div>
+          <input type="number" id="set3Local" placeholder="Local" min="0">
+          <input type="number" id="set3Visit" placeholder="Visit" min="0">
+        </div>
+      </div>
+
+      <p style="color:var(--gris); font-size:0.85em; margin-bottom:20px;">
+        Cargá los sets. El ganador se calcula automáticamente (el que gana 2 de 3 sets).
+      </p>
+
+      <button class="btn" onclick="guardarResultadoPartido()">Guardar resultado</button>
+      <p class="error-msg" id="errorResultado"></p>
+    </div>
+  </div>
+
+  <!-- MODAL INSCRIBIR PAREJA (ADMIN) -->
+  <div class="modal" id="modalInscribirPareja">
+    <div class="modal-contenido" style="max-width: 640px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalInscribirPareja')">×</button>
+      <h2>Inscribir <span>pareja</span></h2>
+      <p id="inscManualTorneo" style="color:var(--gris); margin-bottom:20px;"></p>
+
+      <div class="insc-manual-bloque">
+        <div class="insc-manual-titulo">Jugador 1</div>
+        <label class="insc-manual-check">
+          <input type="checkbox" id="inscManualSinCuenta1" onchange="toggleSinCuenta('1')"> No tiene cuenta en la página
+        </label>
+        <div id="inscManualConCuenta1">
+          <input id="inscManualBuscar1" class="insc-manual-input" placeholder="Buscar por nombre..." oninput="filtrarJugadoresInscManual('1')">
+          <select id="inscManualJugador1" class="insc-manual-input" size="5"></select>
+        </div>
+        <div id="inscManualDatos1" class="insc-manual-datos" style="display:none;">
+          <input id="inscManualNombre1" class="insc-manual-input" placeholder="Nombre y apellido">
+          <input id="inscManualCat1" class="insc-manual-input" placeholder="Categoría (ej: cuarta)">
+        </div>
+      </div>
+
+      <div class="insc-manual-bloque">
+        <div class="insc-manual-titulo">Jugador 2</div>
+        <label class="insc-manual-check">
+          <input type="checkbox" id="inscManualSinCuenta2" onchange="toggleSinCuenta('2')"> No tiene cuenta en la página
+        </label>
+        <div id="inscManualConCuenta2">
+          <input id="inscManualBuscar2" class="insc-manual-input" placeholder="Buscar por nombre..." oninput="filtrarJugadoresInscManual('2')">
+          <select id="inscManualJugador2" class="insc-manual-input" size="5"></select>
+        </div>
+        <div id="inscManualDatos2" class="insc-manual-datos" style="display:none;">
+          <input id="inscManualNombre2" class="insc-manual-input" placeholder="Nombre y apellido">
+          <input id="inscManualCat2" class="insc-manual-input" placeholder="Categoría (ej: cuarta)">
+        </div>
+      </div>
+      <div class="insc-manual-bloque">
+        <div class="insc-manual-titulo" style="display:flex; justify-content:space-between; align-items:center;">
+          ¿Cuándo pueden jugar?
+          <button type="button" class="foto-perfil-quitar" onclick="dispoManualTodo()">Pueden en todos</button>
+        </div>
+        <div class="dispo-tabla" id="inscManualDispo"></div>
+        <p style="color:var(--gris); font-size:0.75em; margin-top:8px;">Opcional. Sirve para elegir los horarios de sus partidos.</p>
+      </div>
+      <label class="insc-manual-check" style="margin:5px 0 20px;">
+        <input type="checkbox" id="inscManualPagado"> Ya pagó la inscripción
+      </label>
+      <p style="color:var(--gris); font-size:0.8em; margin-bottom:15px;">
+        Los jugadores sin cuenta aparecen en el cuadro pero no suman puntos de ranking ni tienen perfil.
+      </p>
+      <button class="btn" onclick="confirmarInscripcionManual()">Inscribir pareja</button>
+      <p class="error-msg" id="errorInscManual"></p>
+    </div>
+  </div>
+
+  <!-- MODAL HORARIO DEL PARTIDO -->
+  <div class="modal" id="modalHorario">
+    <div class="modal-contenido" style="max-width: 680px; max-height: 92vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalHorario')">×</button>
+      <h2>Horario del <span>partido</span></h2>
+      <div class="partido-preview" id="horarioPartidoInfo"></div>
+
+      <div class="campo">
+        <label>Día</label>
+        <div class="horario-dias" id="horarioDias"></div>
+        <input type="date" id="horarioFecha" onchange="revisarHorario()" style="margin-top:8px;">
+      </div>
+      <div class="campo">
+        <label>Hora</label>
+        <input type="time" id="horarioHora" step="900" onchange="revisarHorario()" oninput="revisarHorario()">
+      </div>
+      <div id="avisosHorario"></div>
+
+      <div class="horario-botones">
+        <button class="btn" onclick="guardarHorario()">Guardar horario</button>
+        <button class="btn btn-outline" id="btnQuitarHorario" onclick="guardarHorario(true)">Quitar horario</button>
+      </div>
+      <p class="error-msg" id="errorHorario"></p>
+    </div>
+  </div>
+
+  <!-- MODAL AVISAR A JUGADORES -->
+  <div class="modal" id="modalAvisos">
+    <div class="modal-contenido" style="max-width: 680px; max-height: 92vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalAvisos')">×</button>
+      <h2>Avisar a <span>jugadores</span></h2>
+      <p id="avisosTorneoNombre" style="color:var(--gris); margin-bottom:15px;"></p>
+      <p id="resumenAvisos" style="color:var(--gris); font-size:0.88em; margin-bottom:15px; line-height:1.6;"></p>
+
+      <div class="campo">
+        <label>Mensaje de WhatsApp</label>
+        <textarea id="avisoMensaje" rows="4" class="insc-manual-input" style="resize:vertical;"></textarea>
+        <p style="color:var(--gris); font-size:0.72em;">Se reemplaza automáticamente: {nombre} {torneo} {categoria} {fecha} {link}</p>
+      </div>
+
+      <div class="horario-botones" style="margin-bottom:15px;">
+        <button class="btn btn-sm" onclick="avisarEnLaPagina()">🔔 Avisar a todos en la página</button>
+        <button class="btn btn-sm btn-outline" onclick="copiarNumerosAvisos()">📋 Copiar números</button>
+      </div>
+
+      <h3 style="color: var(--acento); font-size:0.8em; letter-spacing:2px; text-transform:uppercase; margin:10px 0;">Por WhatsApp (uno por uno)</h3>
+      <div id="listaAvisos"></div>
+      <p style="color:var(--gris); font-size:0.75em; margin-top:12px;">
+        Cada botón abre WhatsApp con el mensaje listo: solo tenés que tocar "Enviar". Solo aparecen los jugadores que dejaron su teléfono y aceptaron recibir avisos.
+      </p>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script src="js/tema.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Curva Pádel Indoor | Inicio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- LAYOUT: sidebar + contenido -->
+  <div class="layout-app">
+
+    <!-- SIDEBAR (se inyecta desde app.js) -->
+    <aside class="sidebar" id="sidebarWrap"></aside>
+
+    <!-- OVERLAY MOBILE -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="contenido-app">
+
+      <!-- HEADER SUPERIOR: usuario + campanita (se inyecta desde app.js) -->
+      <header class="header-top" id="headerTopWrap"></header>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+
+        <!-- HERO -->
+        <section class="hero" id="inicio">
+          <div class="hero-bg"></div>
+          <div class="hero-pelota" aria-hidden="true"></div>
+          <div class="hero-contenido">
+            <div class="hero-etiqueta">Circuito La Curva</div>
+            <h1>
+              Jugá. Competí.
+              <span>Subí de nivel.</span>
+            </h1>
+            <p>Inscribite a los torneos del club, seguí tus zonas y llaves en vivo y sumá puntos en el ranking de tu categoría.</p>
+            <div class="hero-botones">
+              <a href="torneos.html" class="btn btn-grande">
+                Ver torneos
+                <span class="btn-flecha">→</span>
+              </a>
+              <a href="#ranking" class="btn btn-grande btn-hero-sec" onclick="scrollA('ranking'); return false;">Ranking</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARDS ACCESO RÁPIDO -->
+        <section class="acceso-rapido">
+          <a href="torneos.html" class="acceso-card">
+            <div class="acceso-icono">🏆</div>
+            <div class="acceso-info">
+              <h4>Torneos</h4>
+              <p>Cuadros y resultados en vivo</p>
+            </div>
+            <div class="acceso-flecha">→</div>
+          </a>
+
+          <a href="#ranking" class="acceso-card" onclick="scrollA('ranking'); return false;">
+            <div class="acceso-icono">🎯</div>
+            <div class="acceso-info">
+              <h4>Ranking</h4>
+              <p>Tu posición en la tabla</p>
+            </div>
+            <div class="acceso-flecha">→</div>
+          </a>
+
+          <a href="#buscador" class="acceso-card" onclick="scrollA('buscador'); return false;">
+            <div class="acceso-icono">👥</div>
+            <div class="acceso-info">
+              <h4>Jugadores</h4>
+              <p>Conocé la comunidad</p>
+            </div>
+            <div class="acceso-flecha">→</div>
+          </a>
+
+          <a href="#palmares" class="acceso-card" onclick="scrollA('palmares'); return false;">
+            <div class="acceso-icono">🥇</div>
+            <div class="acceso-info">
+              <h4>Palmarés</h4>
+              <p>Campeones del club</p>
+            </div>
+            <div class="acceso-flecha">→</div>
+          </a>
+        </section>
+
+        <!-- TORNEOS + RANKING -->
+        <section class="seccion" id="torneos">
+          <div class="torneos-layout">
+
+            <div>
+              <div class="seccion-header">
+                <div class="seccion-titulo">
+                  <span class="etiqueta">Próximos torneos</span>
+                  <h2>Torneos <span>activos</span></h2>
+                </div>
+                <a class="seccion-link" href="torneos.html">Ver todos los torneos →</a>
+              </div>
+              <div class="torneos-grid-mini" id="listaTorneos"></div>
+
+              <div id="misTorneosSeccion" style="display:none; margin-top:40px;">
+                <div class="seccion-header">
+                  <div class="seccion-titulo">
+                    <span class="etiqueta">En curso</span>
+                    <h2>Mis <span>torneos</span></h2>
+                  </div>
+                </div>
+                <div id="misTorneosLista"></div>
+              </div>
+            </div>
+
+            <aside>
+              <div class="ranking-panel">
+                <div class="ranking-panel-header">
+                  <h3>
+                    <span class="icono">🏆</span>
+                    Ranking
+                  </h3>
+                  <a class="seccion-link" onclick="scrollA('ranking')">
+                    Ver ranking →
+                  </a>
+                </div>
+                <div class="ranking-lista" id="rankingPanel">
+                  <p class="ranking-vacio">Cargando...</p>
+                </div>
+              </div>
+            </aside>
+
+          </div>
+        </section>
+
+        <!-- TOP 10 MÁS JUGADOS -->
+        <section class="seccion" id="masJugadosPublico" style="display:none;">
+          <div class="seccion-header">
+            <div class="seccion-titulo">
+              <span class="etiqueta">Los que más juegan</span>
+              <h2>Top 10 <span>más jugados</span></h2>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:25px;" id="masJugadosTabs"></div>
+          <div id="masJugadosContenido"></div>
+        </section>
+
+        <!-- BUSCADOR DE JUGADORES -->
+        <section class="seccion" id="buscador">
+          <div class="seccion-header">
+            <div class="seccion-titulo">
+              <span class="etiqueta">Jugadores</span>
+              <h2>Buscá <span>jugadores</span></h2>
+            </div>
+          </div>
+
+          <div class="buscador-wrap">
+            <div class="buscador-input-wrap">
+              <span class="buscador-icono">🔍</span>
+              <input
+                type="text"
+                id="buscadorJugadores"
+                class="buscador-input"
+                placeholder="Buscar por nombre..."
+                oninput="filtrarJugadores()"
+              >
+            </div>
+            <div class="buscador-resultados" id="resultadoJugadores">
+              <p class="buscador-vacio">Escribí un nombre para empezar a buscar.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- RANKING GENERAL -->
+        <section class="seccion" id="ranking">
+          <div class="seccion-header">
+            <div class="seccion-titulo">
+              <span class="etiqueta">Clasificación</span>
+              <h2>Ranking <span>general</span></h2>
+            </div>
+          </div>
+          <div class="tabla-scroll"><table class="ranking-tabla">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Jugador</th>
+                <th>Categoría</th>
+                <th>Puntos</th>
+                <th>Torneos</th>
+              </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+          </table></div>
+          <div class="puntos-explicacion">
+            <h4>¿Cómo se suman los puntos?</h4>
+            <div class="puntos-grid">
+              <div><strong>1000</strong><span>Campeón</span></div>
+              <div><strong>800</strong><span>Subcampeón</span></div>
+              <div><strong>600</strong><span>Semifinal</span></div>
+              <div><strong>400</strong><span>Cuartos</span></div>
+              <div><strong>200</strong><span>Octavos</span></div>
+              <div><strong>120</strong><span>16avos</span></div>
+              <div><strong>60</strong><span>Zona</span></div>
+            </div>
+            <p>Los puntos se suman en el ranking de tu categoría cuando termina cada torneo.</p>
+          </div>
+        </section>
+
+        <!-- PALMARÉS -->
+        <section class="seccion" id="palmares">
+          <div class="seccion-header">
+            <div class="seccion-titulo">
+              <span class="etiqueta">Historial</span>
+              <h2>Palmarés <span>del club</span></h2>
+            </div>
+          </div>
+          <div id="palmaresContenido"></div>
+        </section>
+
+        <!-- REDES SOCIALES -->
+        <section class="seccion" id="redes">
+          <div class="seccion-header">
+            <div class="seccion-titulo">
+              <span class="etiqueta">Seguinos</span>
+              <h2>Nuestras <span>redes</span></h2>
+            </div>
+          </div>
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" class="instagram-cta">
+            <div class="instagram-cta-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="0.6" fill="currentColor"/></svg></div>
+            <div class="instagram-cta-texto">
+              <span class="instagram-cta-etiqueta">Instagram oficial</span>
+              <strong>@lacurvapadelindoor</strong>
+              <p>Fotos de los torneos, cuadros, ganadores y novedades del club.</p>
+            </div>
+            <span class="btn btn-sm">Seguir <span class="btn-flecha">→</span></span>
+          </a>
+        </section>
+
+      </main>
+
+      <!-- FOOTER -->
+      <footer id="contacto">
+        <div class="footer-info">
+          <strong>LA CURVA PÁDEL INDOOR</strong>
+          <span class="separador"></span>
+          <span>Av. San Martín 2479</span>
+          <span class="separador"></span>
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">@lacurvapadelindoor</a>
+        </div>
+        <div class="footer-redes">
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" title="Instagram @lacurvapadelindoor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="0.6" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODALES -->
+  <!-- ============================================ -->
+
+  <!-- MODAL LOGIN -->
+  <div class="modal" id="modalLogin">
+    <div class="modal-contenido">
+      <button class="modal-cerrar" onclick="cerrarModal('modalLogin')">×</button>
+      <h2>Iniciar <span>sesión</span></h2>
+      <div class="campo">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="campo">
+        <label>Contraseña</label>
+        <input id="pass" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn" onclick="login()">Entrar</button>
+      <p class="error-msg" id="errorLogin"></p>
+      <p class="link-secundario">
+        ¿No tenés cuenta? <a onclick="cambiarModal('modalLogin','modalRegistro')">Registrate</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- MODAL REGISTRO -->
+  <div class="modal" id="modalRegistro">
+    <div class="modal-contenido" style="max-width: 550px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalRegistro')">×</button>
+      <h2>Crear <span>cuenta</span></h2>
+      <p style="color:var(--gris); font-size:0.85em; margin-bottom:20px;">
+        Los campos con <span style="color: var(--acento)">*</span> son obligatorios.
+      </p>
+      <div class="campo">
+        <label>Nombre completo <span style="color: var(--acento)">*</span></label>
+        <input id="regNombre" placeholder="Juan Pérez">
+      </div>
+      <div class="campo">
+        <label>Email <span style="color: var(--acento)">*</span></label>
+        <input id="regEmail" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="campo">
+        <label>Contraseña <span style="color: var(--acento)">*</span></label>
+        <input id="regPass" type="password" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="campo">
+        <label>Género <span style="color: var(--acento)">*</span></label>
+        <select id="regGenero">
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Celular con WhatsApp (opcional)</label>
+        <input id="regTelefono" placeholder="Ej: 11 2345 6789">
+      </div>
+      <div class="campo">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; text-transform:none; letter-spacing:0; font-weight:600;">
+          <input type="checkbox" id="regAvisos" checked style="width:auto;">
+          Quiero que me avisen por WhatsApp cuando haya torneos para mí
+        </label>
+      </div>
+      <button class="btn" onclick="registrar()">Crear cuenta</button>
+      <p class="error-msg" id="errorRegistro"></p>
+    </div>
+  </div>
+
+  <!-- MODAL INSCRIPCIÓN POR PAREJAS -->
+  <div class="modal" id="modalInscripcion">
+    <div class="modal-contenido" style="max-width: 620px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalInscripcion')">×</button>
+      <h2>Inscripción <span>por pareja</span></h2>
+      <p id="torneoSeleccionado" style="color:var(--gris); margin-bottom:20px;"></p>
+
+      <div class="campo">
+        <label>Tu categoría</label>
+        <input id="inscMiCategoria" disabled>
+      </div>
+
+      <div class="campo">
+        <label>Elegí a tu compañero</label>
+        <input id="inscBuscarCompanero" placeholder="Buscar por nombre..." oninput="filtrarCompaneros()">
+      </div>
+
+      <div id="listaCompaneros" style="max-height:280px; overflow-y:auto; margin-bottom:20px;"></div>
+
+      <div id="compaSeleccionado" style="display:none; padding:15px; background:rgba(180,227,61,0.1); border-radius:12px; margin-bottom:20px;">
+        <p style="color: var(--acento); font-weight:700; margin-bottom:5px;">Compañero seleccionado:</p>
+        <p id="compaNombre"></p>
+        <p id="compaCategoria" style="color:var(--gris); font-size:0.9em;"></p>
+      </div>
+
+      <div id="seccionDisponibilidad" style="display:none;">
+        <hr style="border:none; border-top:1px solid var(--borde); margin:25px 0;">
+        <label style="display:block; font-size:0.85em; color: var(--acento); font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">
+          ¿Cuándo podés jugar?
+        </label>
+        <p style="color:var(--gris); font-size:0.85em; margin-bottom:15px;">
+          Marcá los horarios en los que <strong style="color: var(--acento)">podés jugar</strong>.
+        </p>
+
+        <button type="button" class="btn btn-outline" id="btnTodosHorarios" onclick="marcarTodosLosHorarios()" style="width:100%; margin-bottom:20px;">
+          Puedo en todos los horarios
+        </button>
+
+        <div class="dispo-leyenda" style="margin-bottom:15px;">
+          <span><span class="cuadradito lib"></span> No puedo</span>
+          <span><span class="cuadradito pref"></span> Puedo</span>
+        </div>
+
+        <div id="dispoRangos"></div>
+      </div>
+
+      <button class="btn" id="btnEnviarSolicitud" onclick="enviarSolicitudPareja()" style="display:none; margin-top:20px;">
+        Enviar solicitud
+      </button>
+
+      <p class="error-msg" id="errorInscripcion"></p>
+
+      <div id="misSolicitudes">
+        <h4>Solicitudes enviadas para este torneo</h4>
+        <div id="misSolicitudesLista"></div>
+      </div>
+
+      <div id="miTorneo" style="display:none; margin-top:25px;">
+        <h4 style="color: var(--acento); font-size:0.85em; letter-spacing:2px; text-transform:uppercase; margin-bottom:15px;">
+          Mi torneo
+        </h4>
+        <div id="miTorneoContenido"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MI PERFIL -->
+  <div class="modal" id="modalPerfil">
+    <div class="modal-contenido" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-cerrar" onclick="cerrarModal('modalPerfil')">×</button>
+      <h2>Mi <span>perfil</span></h2>
+      <div class="campo">
+        <label>Foto de perfil</label>
+        <div class="foto-perfil-editor">
+          <div class="foto-perfil-preview" id="perFotoPreview">?</div>
+          <div class="foto-perfil-acciones">
+            <label class="foto-perfil-boton">
+              📷 Elegir foto
+              <input type="file" accept="image/*" id="perFotoInput" onchange="elegirFotoPerfil(this)" hidden>
+            </label>
+            <button type="button" class="foto-perfil-quitar" id="perFotoQuitar" onclick="quitarFotoPerfil()">Quitar foto</button>
+            <span class="foto-perfil-ayuda">Se ve en tu perfil público y en el ranking.</span>
+          </div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Nombre completo</label>
+        <input id="perNombre">
+      </div>
+      <div class="campo">
+        <label>Celular con WhatsApp</label>
+        <input id="perTelefono" placeholder="Ej: 11 2345 6789">
+      </div>
+      <div class="campo">
+        <label>Categoría</label>
+        <select id="perCategoria"><option value="">Sin definir</option></select>
+        <p style="color:var(--gris); font-size:0.75em; margin-top:6px;">Podés anotarte en torneos de tu categoría o hasta 2 categorías por encima.</p>
+      </div>
+      <div class="campo">
+        <label>Lado de juego</label>
+        <select id="perLado">
+          <option value="">Sin definir</option>
+          <option value="drive">Drive (derecha)</option>
+          <option value="reves">Revés (izquierda)</option>
+          <option value="ambos">Ambos</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Mano hábil</label>
+        <select id="perMano">
+          <option value="">Sin definir</option>
+          <option value="derecha">Diestro</option>
+          <option value="izquierda">Zurdo</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Altura (cm)</label>
+        <input id="perAltura" type="number" placeholder="Ej: 178">
+      </div>
+      <div class="campo">
+        <label>Edad</label>
+        <input id="perEdad" type="number" placeholder="Ej: 28">
+      </div>
+      <div class="campo">
+        <label>Ciudad</label>
+        <input id="perCiudad" placeholder="Ej: Buenos Aires">
+      </div>
+      <div class="campo">
+        <label>Bio corta</label>
+        <input id="perBio" placeholder="Ej: Jugador de 4ta" maxlength="80">
+      </div>
+      <div class="campo">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+          <input type="checkbox" id="perPublico" style="width:auto;">
+          Perfil público
+        </label>
+      </div>
+      <div class="campo">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+          <input type="checkbox" id="perAvisos" style="width:auto;">
+          Avisarme por WhatsApp de torneos nuevos
+        </label>
+      </div>
+      <button class="btn" onclick="guardarPerfil()">Guardar cambios</button>
+      <p class="error-msg" id="errorPerfil"></p>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN -->
+  <div class="modal modal-confirmar" id="modalConfirmar">
+    <div class="modal-contenido">
+      <div class="confirmar-icono" id="confirmarIcono">!</div>
+      <div class="confirmar-titulo" id="confirmarTitulo">¿Estás seguro?</div>
+      <div class="confirmar-texto" id="confirmarTexto">Esta acción no se puede deshacer.</div>
+      <div class="confirmar-botones">
+        <button class="confirmar-no" onclick="cerrarConfirmar()">Cancelar</button>
+        <button class="confirmar-si" id="confirmarSiBtn">Sí, confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script src="js/tema.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torneos | La Curva Pádel Indoor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .torneos-page-header { margin-bottom: 25px; }
+    .torneos-page-header h1 { font-size: 2.3em; font-weight: 800; margin-bottom: 8px; }
+    .torneos-page-header h1 span { color: var(--acento); }
+    .torneos-page-header p { color: var(--gris); max-width: 640px; }
+
+    .filtros-torneos {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .chip-filtro {
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid var(--borde);
+      background: var(--card);
+      color: var(--gris);
+      font-family: inherit;
+      font-size: 0.8em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transicion);
+    }
+    .chip-filtro:hover { color: var(--blanco); border-color: var(--gris-oscuro); }
+    .chip-filtro.activo { background: rgba(180,227,61,0.15); color: var(--acento); border-color: rgba(180,227,61,0.5); }
+    .filtros-torneos input {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 18px;
+      border-radius: 50px;
+      border: 1px solid var(--borde);
+      background: var(--card);
+      color: var(--blanco);
+      font-family: inherit;
+      font-size: 0.88em;
+    }
+    .filtros-torneos input:focus { outline: none; border-color: var(--verde); }
+
+    .bloque-torneos { margin-bottom: 40px; }
+    .bloque-torneos h2 {
+      color: var(--acento);
+      font-size: 1.1em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bloque-torneos h2 .contador {
+      background: rgba(180,227,61,0.15);
+      color: var(--acento);
+      font-size: 0.7em;
+      padding: 2px 10px;
+      border-radius: 50px;
+      letter-spacing: 0;
+    }
+    .vivo-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: #ff9800;
+      animation: pulso 1.5s infinite;
+      display: inline-block;
+    }
+
+    .canchas-vivo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+    }
+    .cancha-vivo-card {
+      background: rgba(255,152,0,0.07);
+      border: 1px solid rgba(255,152,0,0.35);
+      border-radius: 14px;
+      padding: 16px 18px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: var(--transicion);
+    }
+    .cancha-vivo-card:hover { transform: translateY(-3px); border-color: #ff9800; }
+    .cancha-vivo-card .cancha-nombre { color: var(--naranja); font-weight: 800; font-size: 0.95em; margin-bottom: 4px; }
+    .cancha-vivo-card .meta { color: var(--gris); font-size: 0.72em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .cancha-vivo-card .pareja { color: var(--blanco); font-weight: 700; font-size: 0.88em; }
+    .cancha-vivo-card .vs { color: var(--gris); font-size: 0.72em; margin: 2px 0; }
+
+    .grid-torneos-pub {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+    }
+    .torneo-pub-card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      padding: 22px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transicion);
+      border-top: 3px solid var(--gris-oscuro);
+    }
+    .torneo-pub-card:hover { transform: translateY(-4px); background: var(--card-hover); }
+    .torneo-pub-card.en-juego { border-top-color: #42a5f5; }
+    .torneo-pub-card.abierto { border-top-color: var(--verde); }
+    .torneo-pub-card.finalizado { border-top-color: #ffc107; }
+    .torneo-pub-card.suspendido { border-top-color: #ff5252; opacity: 0.7; }
+    .torneo-pub-card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag-pub {
+      font-size: 0.65em;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 50px;
+      background: var(--fondo-3);
+      color: var(--gris);
+    }
+    .tag-pub.estado-en-juego { background: rgba(66,165,245,0.15); color: var(--celeste); }
+    .tag-pub.estado-abierto { background: rgba(180,227,61,0.15); color: var(--acento); }
+    .tag-pub.estado-finalizado { background: rgba(255,193,7,0.15); color: var(--oro); }
+    .tag-pub.estado-suspendido { background: rgba(255,82,82,0.15); color: var(--rojo); }
+    .torneo-pub-card h3 { color: var(--blanco); font-size: 1.2em; font-weight: 800; }
+    .torneo-pub-card .fecha { color: var(--gris); font-size: 0.85em; }
+    .torneo-pub-card .fase-actual { color: var(--celeste); font-size: 0.85em; font-weight: 700; }
+    .barra-progreso {
+      height: 6px;
+      background: var(--fondo-3);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .barra-progreso > div { height: 100%; background: linear-gradient(90deg, #42a5f5, var(--verde)); border-radius: 6px; }
+    .torneo-pub-card .progreso-texto { color: var(--gris); font-size: 0.75em; }
+    .torneo-pub-card .campeones-pub { color: var(--blanco); font-size: 0.88em; font-weight: 700; }
+    .torneo-pub-card .campeones-pub span { color: var(--oro); }
+    .torneo-pub-card .accion {
+      margin-top: auto;
+      padding-top: 10px;
+      color: var(--acento);
+      font-weight: 700;
+      font-size: 0.82em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .vacio-pub { color: var(--gris); padding: 10px 0 0; }
+  </style>
+</head>
+<body>
+
+  <div class="layout-app">
+    <aside class="sidebar" id="sidebarWrap"></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+    <div class="contenido-app">
+      <header class="header-top" id="headerTopWrap"></header>
+
+      <main class="main-content">
+        <div class="torneos-page-header">
+          <h1>Torneos <span>La Curva</span></h1>
+          <p>Seguí los torneos en vivo: cuadros, resultados, qué se está jugando en cada cancha y los campeones. No hace falta tener cuenta.</p>
+        </div>
+
+        <div class="filtros-torneos">
+          <button class="chip-filtro activo" data-genero="" onclick="filtrarGenero(this)">Todos</button>
+          <button class="chip-filtro" data-genero="masculino" onclick="filtrarGenero(this)">Masculino</button>
+          <button class="chip-filtro" data-genero="femenino" onclick="filtrarGenero(this)">Femenino</button>
+          <button class="chip-filtro" data-genero="mixto" onclick="filtrarGenero(this)">Mixto</button>
+          <input id="buscarTorneo" placeholder="🔍 Buscar torneo o jugador..." oninput="filtrarTexto(this.value)">
+        </div>
+
+        <div id="contenidoTorneos">
+          <p style="color:var(--gris); text-align:center; padding:60px;">Cargando torneos...</p>
+        </div>
+      </main>
+
+      <footer>
+        <div class="footer-info">
+          <strong>LA CURVA PÁDEL INDOOR</strong>
+          <span class="separador"></span>
+          <span>Av. San Martín 2479</span>
+          <span class="separador"></span>
+          <a href="https://www.instagram.com/lacurvapadelindoor/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">📷 @lacurvapadelindoor</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import { iniciarLayout } from "./js/layout.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    iniciarLayout({ auth, db, activo: "torneos" });
+
+    // ===== HELPERS =====
+    function aArray(x) {
+      if (!x) return [];
+      if (Array.isArray(x)) return x.filter(v => v !== null && v !== undefined);
+      if (typeof x === "object") return Object.keys(x).sort((a, b) => Number(a) - Number(b)).map(k => x[k]).filter(v => v != null);
+      return [];
+    }
+    function esc(t) {
+      return String(t ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function textoGenero(g) {
+      return { masculino: "Masculino", femenino: "Femenino", mixto: "Mixto" }[g] || g || "-";
+    }
+    function categoriaTexto(t) {
+      return t.tipo === "suma" ? `Suma ${t.sumaMinima}` : (t.categoria || "General");
+    }
+    function fechaTexto(f) {
+      if (!f) return "Fecha a definir";
+      try {
+        const d = f.length === 10 ? new Date(f + "T00:00:00") : new Date(f);
+        return d.toLocaleDateString("es-AR", { weekday: "short", day: "2-digit", month: "long", year: "numeric" });
+      } catch (e) { return f; }
+    }
+    function nombrePareja(p) { return p ? `${p.j1} + ${p.j2}` : "Por definir"; }
+
+    function partidosDe(t) {
+      const b = t.bracket;
+      if (!b) return { grupos: [], rondas: [] };
+      const grupos = aArray(b.grupos).map(g => ({ nombre: String(g.nombre || "").replace(/^Grupo/, "Zona"), partidos: aArray(g.partidos) }));
+      const rondas = aArray(b.rondas).map(r => ({ nombre: r.nombre, partidos: aArray(r.partidos) }));
+      return { grupos, rondas };
+    }
+
+    function resumenTorneo(t) {
+      const { grupos, rondas } = partidosDe(t);
+      const todos = [...grupos.flatMap(g => g.partidos), ...rondas.flatMap(r => r.partidos)]
+        .filter(p => !p.bye && p.local && p.visitante);
+      const jugados = todos.filter(p => p.cerrado).length;
+      const enCancha = todos.filter(p => !p.cerrado && p.cancha).length;
+
+      let fase = "";
+      const gPend = grupos.some(g => g.partidos.some(p => !p.cerrado));
+      if (gPend) fase = "Fase de zonas";
+      else if (rondas.length === 0) fase = grupos.length ? "Zonas terminadas · esperando llaves" : "Armando las llaves";
+      else {
+        const r = rondas.find(r => r.partidos.some(p => !p.cerrado && !p.bye));
+        fase = r ? r.nombre : "Final jugada";
+      }
+      return { total: todos.length, jugados, enCancha, fase };
+    }
+
+    // ===== FILTROS =====
+    let torneosData = {};
+    let filtroGenero = "";
+    let filtroTexto = "";
+
+    window.filtrarGenero = function(btn) {
+      document.querySelectorAll(".chip-filtro").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+      filtroGenero = btn.dataset.genero;
+      renderizar();
+    };
+    window.filtrarTexto = function(v) {
+      filtroTexto = (v || "").trim().toLowerCase();
+      renderizar();
+    };
+
+    function pasaFiltro(t) {
+      if (filtroGenero && t.genero !== filtroGenero) return false;
+      if (!filtroTexto) return true;
+      if ((t.nombre || "").toLowerCase().includes(filtroTexto)) return true;
+      // buscar también por jugador
+      const { grupos, rondas } = partidosDe(t);
+      const nombres = [...grupos.flatMap(g => g.partidos), ...rondas.flatMap(r => r.partidos)]
+        .flatMap(p => [p.local, p.visitante]).filter(Boolean)
+        .map(p => `${p.j1} ${p.j2}`.toLowerCase());
+      if (t.campeon) nombres.push(`${t.campeon.nombre1} ${t.campeon.nombre2}`.toLowerCase());
+      return nombres.some(n => n.includes(filtroTexto));
+    }
+
+    // ===== RENDER =====
+    function cardTorneo(id, t) {
+      const enJuego = t.estado === "habilitado" && t.bracket;
+      const clase = t.estado === "finalizado" ? "finalizado" : (t.estado === "suspendido" ? "suspendido" : (enJuego ? "en-juego" : "abierto"));
+      const estadoTxt = { "en-juego": "En juego", abierto: "Inscripciones abiertas", finalizado: "Finalizado", suspendido: "Suspendido" }[clase];
+
+      let cuerpo = "";
+      let accion = "Ver torneo →";
+      if (clase === "en-juego") {
+        const r = resumenTorneo(t);
+        const pct = r.total ? Math.round((r.jugados / r.total) * 100) : 0;
+        cuerpo = `
+          <div class="fase-actual">${esc(r.fase)}</div>
+          <div class="barra-progreso"><div style="width:${pct}%"></div></div>
+          <div class="progreso-texto">${r.jugados} de ${r.total} partidos jugados${r.enCancha ? ` · <span style="color: var(--naranja);">${r.enCancha} en cancha ahora</span>` : ""}</div>`;
+        accion = "Seguir en vivo →";
+      } else if (clase === "finalizado" && t.campeon) {
+        cuerpo = `<div class="campeones-pub"><span>🏆</span> ${esc(t.campeon.nombre1)} + ${esc(t.campeon.nombre2)}</div>`;
+        accion = "Ver cuadro final →";
+      } else if (clase === "abierto") {
+        const p = t.premios || {};
+        cuerpo = p.primero ? `<div class="progreso-texto">🏆 1°: ${esc(p.primero)}${p.segundo ? ` · 2°: ${esc(p.segundo)}` : ""}</div>` : "";
+        accion = "Ver e inscribirme →";
+      }
+
+      return `
+        <a class="torneo-pub-card ${clase}" href="torneo.html?id=${id}">
+          <div class="tags">
+            <span class="tag-pub estado-${clase}">${estadoTxt}</span>
+            <span class="tag-pub">${esc(categoriaTexto(t))}</span>
+            <span class="tag-pub">${textoGenero(t.genero)}</span>
+            ${t.simulado ? `<span class="tag-pub">Prueba</span>` : ""}
+          </div>
+          <h3>${esc(t.nombre)}</h3>
+          <div class="fecha">📅 ${fechaTexto(t.estado === "finalizado" ? (t.fechaFinalizacion || t.fecha) : t.fecha)}</div>
+          ${cuerpo}
+          <div class="accion">${accion}</div>
+        </a>`;
+    }
+
+    function bloque(titulo, lista, extraTitulo = "") {
+      if (lista.length === 0) return "";
+      return `
+        <section class="bloque-torneos">
+          <h2>${extraTitulo}${titulo} <span class="contador">${lista.length}</span></h2>
+          <div class="grid-torneos-pub">${lista.map(([id, t]) => cardTorneo(id, t)).join("")}</div>
+        </section>`;
+    }
+
+    function renderizar() {
+      const cont = document.getElementById("contenidoTorneos");
+      const visibles = Object.entries(torneosData).filter(([_, t]) => t.estado && t.estado !== "borrador" && pasaFiltro(t));
+
+      const enJuego = visibles.filter(([_, t]) => t.estado === "habilitado" && t.bracket)
+        .sort((a, b) => (a[1].fecha || "").localeCompare(b[1].fecha || ""));
+      const abiertos = visibles.filter(([_, t]) => t.estado === "habilitado" && !t.bracket)
+        .sort((a, b) => (a[1].fecha || "9999").localeCompare(b[1].fecha || "9999"));
+      const finalizados = visibles.filter(([_, t]) => t.estado === "finalizado")
+        .sort((a, b) => new Date(b[1].fechaFinalizacion || b[1].fecha || 0) - new Date(a[1].fechaFinalizacion || a[1].fecha || 0));
+      const suspendidos = visibles.filter(([_, t]) => t.estado === "suspendido");
+
+      // Partidos que se están jugando ahora en cada cancha
+      const vivos = [];
+      enJuego.forEach(([id, t]) => {
+        const { grupos, rondas } = partidosDe(t);
+        [...grupos.map(g => [g.nombre, g.partidos]), ...rondas.map(r => [r.nombre, r.partidos])].forEach(([fase, partidos]) => {
+          partidos.forEach(p => {
+            if (!p.cerrado && !p.bye && p.cancha && p.local && p.visitante) vivos.push({ id, t, fase, p });
+          });
+        });
+      });
+      vivos.sort((a, b) => (a.p.cancha.nombre || "").localeCompare(b.p.cancha.nombre || "", "es", { numeric: true }));
+
+      const vivosHTML = vivos.length ? `
+        <section class="bloque-torneos">
+          <h2><span class="vivo-dot"></span> Jugándose ahora <span class="contador">${vivos.length}</span></h2>
+          <div class="canchas-vivo">
+            ${vivos.map(v => `
+              <a class="cancha-vivo-card" href="torneo.html?id=${v.id}">
+                <div class="cancha-nombre">🎾 ${esc(v.p.cancha.nombre)}</div>
+                <div class="meta">${esc(v.t.nombre)} · ${esc(v.fase)}</div>
+                <div class="pareja">${esc(nombrePareja(v.p.local))}</div>
+                <div class="vs">vs</div>
+                <div class="pareja">${esc(nombrePareja(v.p.visitante))}</div>
+              </a>`).join("")}
+          </div>
+        </section>` : "";
+
+      const html = vivosHTML +
+        bloque("En juego", enJuego) +
+        bloque("Inscripciones abiertas", abiertos) +
+        bloque("Finalizados", finalizados) +
+        bloque("Suspendidos", suspendidos);
+
+      cont.innerHTML = html || `<p class="vacio-pub">${filtroTexto || filtroGenero ? "No hay torneos con ese filtro." : "Todavía no hay torneos publicados."}</p>`;
+    }
+
+    onValue(ref(db, "torneos"), (snap) => {
+      torneosData = snap.val() || {};
+      renderizar();
+    }, (error) => {
+      console.error(error);
+      document.getElementById("contenidoTorneos").innerHTML = `<p class="vacio-pub">No se pudieron cargar los torneos.</p>`;
+    });
+  </script>
+</body>
+</html>
